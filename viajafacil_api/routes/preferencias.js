@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const preferencias = require('../models/preferencias');
-const preferencias = require('../models/preferencias');
+
 
 // POST nueva preferencia
 router.post('/', async (req, res) => {
