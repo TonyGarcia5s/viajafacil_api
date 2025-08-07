@@ -1,7 +1,37 @@
-module.exports = {
-  cliente_id: "cliente1_id",
-  paquete_id: "paquete1_id",
-  precio_final: 980,
-  fecha_cotizacion: new Date("2025-07-10T15:00:00Z"),
-  estado: "pendiente"
-};
+const mongoose = require("mongoose");
+
+const CotizacionSchema = new mongoose.Schema({
+  cliente_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Cliente",
+    required: true,
+  },
+  paquete_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Paquete",
+    required: true,
+  },
+  precio_final: {
+    type: Number,
+    required: true,
+  },
+  fecha_cotizacion: {
+    type: Date,
+    default: Date.now,
+  },
+  estado: {
+    type: String,
+    enum: ["pendiente", "aprobada", "rechazada", "cancelada"],
+    default: "pendiente",
+  },
+  detalles_adicionales: {
+    type: String,
+    default: "",
+  },
+  fecha_creacion: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+module.exports = mongoose.model("Cotizacion", CotizacionSchema);
