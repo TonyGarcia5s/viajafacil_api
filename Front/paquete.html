@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <title>Paquetes - ViajaFácil</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Clientes</title>
+        <style>
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            table,
+            th,
+            td {
+                border: 1px solid #ddd;
+            }
+
+            th,
+            td {
+                padding: 12px;
+                text-align: left;
+            }
+
+            th {
+                background-color: #f4f4f4;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            .btn {
+                padding: 6px 12px;
+                margin: 2px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .btn-edit {
+                background-color: #ffc107;
+                color: white;
+            }
+
+            .btn-delete {
+                background-color: #dc3545;
+                color: white;
+            }
+
+            .btn-add {
+                background-color: #28a745;
+                color: white;
+                margin-bottom: 15px;
+            }
+
+            td button {
+                display: inline-block;
+            }
+        </style>
+    </head>
+
+</head>
+
+<body>
+    <header>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="navId" role="tablist">
+            <li class="nav-item">
+                <a href="#tab1Id" class="nav-link" data-bs-toggle="tab" aria-current="page">ViajaFácil</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button"
+                    aria-haspopup="true" aria-expanded="false">Módulos</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="clientes.html">Clientes</a>
+                    <a class="dropdown-item active" href="paquetes.html">Paquetes</a>
+                    <a class="dropdown-item" href="cotizacion.html">Cotizaciones</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#tab4Id">Reportes</a>
+                </div>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#tab5Id" class="nav-link" data-bs-toggle="tab">Configuración</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#" class="nav-link disabled" data-bs-toggle="tab">Ayuda</a>
+            </li>
+        </ul>
+    </header>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>Gestión de Paquetes</h1>
+            <button class="btn btn-success" id="btnNuevo">Agregar Paquete</button>
+        </div>
+
+        <div class="table-responsive mt-4">
+            <table class="table table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Destinos</th>
+                        <th>Precio</th>
+                        <th>Duración (días)</th>
+                        <th>Incluye</th>
+                        <th>Temporada</th>
+                        <th>Personalizable</th>
+                        <th>Cupo</th>
+                        <th>Activo</th>
+                        <th>Fecha creación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="listadatos"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para agregar/editar paquete -->
+    <div class="modal fade" id="modalPaquete" tabindex="-1" aria-labelledby="modalPaqueteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <form id="formPaquete" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalPaqueteLabel">Agregar Paquete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="paqueteId">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Nombre</label>
+                            <input type="text" id="nombre" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Precio</label>
+                            <input type="number" id="precio" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Descripción</label>
+                        <textarea id="descripcion" class="form-control"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Destinos (separados por coma)</label>
+                            <input type="text" id="destinos" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Duración (días)</label>
+                            <input type="number" id="duracion_dias" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Incluye (separados por coma)</label>
+                        <input type="text" id="incluye" class="form-control">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Temporada</label>
+                            <select id="temporada" class="form-select">
+                                <option value="verano">Verano</option>
+                                <option value="invierno">Invierno</option>
+                                <option value="primavera">Primavera</option>
+                                <option value="otoño">Otoño</option>
+                                <option value="todo_el_año">Todo el año</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>Personalizable</label>
+                            <select id="personalizable" class="form-select">
+                                <option value="true">Sí</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>Cupo disponible</label>
+                            <input type="number" id="cupo_disponible" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Imagen URL</label>
+                        <input type="text" id="imagen_url" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Activo</label>
+                        <select id="activo" class="form-select">
+                            <option value="true">Sí</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            const API_URL = "http://localhost:3000/api/paquetes/";
+            const modalPaquete = new bootstrap.Modal(document.getElementById('modalPaquete'));
+
+            function cargarDatos() {
+                $.get(API_URL, function (data) {
+                    $("#listadatos").empty();
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach((p) => {
+                            const fecha = p.fecha_creacion ? new Date(p.fecha_creacion).toLocaleDateString() : "N/A";
+                            $("#listadatos").append(`
+                        <tr>
+                            <td>${p.nombre}</td>
+                            <td>${p.descripcion || "N/A"}</td>
+                            <td>${p.destinos?.join(", ") || "N/A"}</td>
+                            <td>$${p.precio}</td>
+                            <td>${p.duracion_dias}</td>
+                            <td>${p.incluye?.join(", ") || "N/A"}</td>
+                            <td>${p.temporada}</td>
+                            <td>${p.personalizable ? "Sí" : "No"}</td>
+                            <td>${p.cupo_disponible}</td>
+                            <td>${p.activo ? "Sí" : "No"}</td>
+                            <td>${fecha}</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="editarPaquete('${p._id}')">Editar</button>
+                                <button class="btn btn-danger btn-sm" onclick="eliminarPaquete('${p._id}')">Eliminar</button>
+                            </td>
+                        </tr>
+                    `);
+                        });
+                    } else {
+                        $("#listadatos").append(`<tr><td colspan="12" class="text-center">No hay paquetes registrados</td></tr>`);
+                    }
+                }).fail(function (error) {
+                    $("#listadatos").html(`<tr><td colspan="12" class="text-center text-danger">Error: ${error.statusText}</td></tr>`);
+                });
+            }
+
+            // Nuevo paquete
+            $("#btnNuevo").click(function () {
+                $("#formPaquete")[0].reset();
+                $("#paqueteId").val("");
+                $("#modalPaqueteLabel").text("Agregar Paquete");
+                modalPaquete.show();
+            });
+
+            // Guardar paquete
+            $("#formPaquete").submit(function (e) {
+                e.preventDefault();
+                const id = $("#paqueteId").val();
+                const paqueteData = {
+                    nombre: $("#nombre").val(),
+                    descripcion: $("#descripcion").val(),
+                    destinos: $("#destinos").val().split(",").map(d => d.trim()).filter(d => d),
+                    precio: parseFloat($("#precio").val()),
+                    duracion_dias: parseInt($("#duracion_dias").val()),
+                    incluye: $("#incluye").val().split(",").map(i => i.trim()).filter(i => i),
+                    temporada: $("#temporada").val(),
+                    personalizable: $("#personalizable").val() === "true",
+                    imagen_url: $("#imagen_url").val(),
+                    cupo_disponible: parseInt($("#cupo_disponible").val()),
+                    activo: $("#activo").val() === "true"
+                };
+
+                if (id) {
+                    $.ajax({
+                        url: API_URL + id,
+                        type: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify(paqueteData),
+                        success: function () {
+                            modalPaquete.hide();
+                            cargarDatos();
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: API_URL,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(paqueteData),
+                        success: function () {
+                            modalPaquete.hide();
+                            cargarDatos();
+                        }
+                    });
+                }
+            });
+
+            // Editar paquete
+            window.editarPaquete = function (id) {
+                $.get(API_URL + id, function (p) {
+                    $("#paqueteId").val(p._id);
+                    $("#nombre").val(p.nombre);
+                    $("#descripcion").val(p.descripcion);
+                    $("#destinos").val(p.destinos?.join(", "));
+                    $("#precio").val(p.precio);
+                    $("#duracion_dias").val(p.duracion_dias);
+                    $("#incluye").val(p.incluye?.join(", "));
+                    $("#temporada").val(p.temporada);
+                    $("#personalizable").val(p.personalizable ? "true" : "false");
+                    $("#imagen_url").val(p.imagen_url);
+                    $("#cupo_disponible").val(p.cupo_disponible);
+                    $("#activo").val(p.activo ? "true" : "false");
+                    $("#modalPaqueteLabel").text("Editar Paquete");
+                    modalPaquete.show();
+                });
+            };
+
+            // Eliminar paquete
+            window.eliminarPaquete = function (id) {
+                if (confirm("¿Está seguro de que desea eliminar este paquete?")) {
+                    $.ajax({
+                        url: API_URL + id,
+                        type: 'DELETE',
+                        success: function () {
+                            cargarDatos();
+                        }
+                    });
+                }
+            };
+
+            cargarDatos();
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

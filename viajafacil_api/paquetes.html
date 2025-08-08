@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <title>Gestión de Paquetes - ViajaFácil</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Bootstrap CSS v5.2.1 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <header>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="navId" role="tablist">
+            <li class="nav-item">
+                <a href="#tab1Id" class="nav-link active" data-bs-toggle="tab" aria-current="page">ViajaFácil</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                    aria-haspopup="true" aria-expanded="false">Módulos</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="clientes.html">Clientes</a>
+                    <a class="dropdown-item" href="paquetes.html">Paquetes</a>
+                    <a class="dropdown-item" href="cotizacion.html">Cotizaciones</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#tab4Id">Reportes</a>
+                </div>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#tab5Id" class="nav-link" data-bs-toggle="tab">Configuración</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#" class="nav-link disabled" data-bs-toggle="tab">Ayuda</a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="tab1Id" role="tabpanel">
+
+            </div>
+            <div class="tab-pane fade" id="tab2Id" role="tabpanel"></div>
+            <div class="tab-pane fade" id="tab3Id" role="tabpanel"></div>
+            <div class="tab-pane fade" id="tab4Id" role="tabpanel"></div>
+            <div class="tab-pane fade" id="tab5Id" role="tabpanel"></div>
+        </div>
+
+    </header>
+    <div class="container">
+        <h1>Gestión de Paquetes</h1>
+
+        <div class="container">
+
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre del Paquete</label>
+                <input type="text" class="form-control" name="nombre" id="nombre" aria-describedby="helpId"
+                    placeholder="Ej: Aventura en Monteverde" />
+                <small id="helpId" class="form-text text-muted">Ingrese el nombre del paquete turístico</small>
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea class="form-control" name="descripcion" id="descripcion" rows="3"
+                    placeholder="Descripción detallada del paquete"></textarea>
+                <small id="helpId" class="form-text text-muted">Ingrese una descripción detallada</small>
+            </div>
+            <div class="mb-3">
+                <label for="destinos" class="form-label">Destinos</label>
+                <input type="text" class="form-control" name="destinos" id="destinos" aria-describedby="helpId"
+                    placeholder="Monteverde, Manuel Antonio, Arenal" />
+                <small id="helpId" class="form-text text-muted">Ingrese los destinos separados por comas</small>
+            </div>
+            <div class="mb-3">
+                <label for="precio" class="form-label">Precio</label>
+                <input type="number" class="form-control" name="precio" id="precio" aria-describedby="helpId"
+                    placeholder="1200" />
+                <small id="helpId" class="form-text text-muted">Ingrese el precio en dólares</small>
+            </div>
+            <div class="mb-3">
+                <label for="duracion_dias" class="form-label">Duración (días)</label>
+                <input type="number" class="form-control" name="duracion_dias" id="duracion_dias" aria-describedby="helpId"
+                    placeholder="7" />
+                <small id="helpId" class="form-text text-muted">Ingrese la duración en días</small>
+            </div>
+            <div class="mb-3">
+                <label for="temporada" class="form-label">Temporada</label>
+                <select class="form-select" name="temporada" id="temporada" aria-describedby="helpId">
+                    <option value="todo_el_año">Todo el año</option>
+                    <option value="verano">Verano</option>
+                    <option value="invierno">Invierno</option>
+                    <option value="primavera">Primavera</option>
+                    <option value="otoño">Otoño</option>
+                </select>
+                <small id="helpId" class="form-text text-muted">Seleccione la temporada</small>
+            </div>
+            <div class="mb-3">
+                <label for="incluye" class="form-label">Servicios Incluidos</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="hotel" id="incluye_hotel">
+                    <label class="form-check-label" for="incluye_hotel">Hotel</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="vuelos" id="incluye_vuelos">
+                    <label class="form-check-label" for="incluye_vuelos">Vuelos</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="excursiones" id="incluye_excursiones">
+                    <label class="form-check-label" for="incluye_excursiones">Excursiones</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="transporte" id="incluye_transporte">
+                    <label class="form-check-label" for="incluye_transporte">Transporte</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="alimentacion" id="incluye_alimentacion">
+                    <label class="form-check-label" for="incluye_alimentacion">Alimentación</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="guia" id="incluye_guia">
+                    <label class="form-check-label" for="incluye_guia">Guía</label>
+                </div>
+                <small id="helpId" class="form-text text-muted">Seleccione los servicios incluidos</small>
+            </div>
+            <div class="mb-3">
+                <label for="cupo_disponible" class="form-label">Cupo Disponible</label>
+                <input type="number" class="form-control" name="cupo_disponible" id="cupo_disponible" aria-describedby="helpId"
+                    placeholder="20" />
+                <small id="helpId" class="form-text text-muted">Ingrese el cupo disponible</small>
+            </div>
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="personalizable" checked>
+                    <label class="form-check-label" for="personalizable">Personalizable</label>
+                </div>
+                <small id="helpId" class="form-text text-muted">Marque si el paquete es personalizable</small>
+            </div>
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="activo" checked>
+                    <label class="form-check-label" for="activo">Activo</label>
+                </div>
+                <small id="helpId" class="form-text text-muted">Marque si el paquete está activo</small>
+            </div>
+            <div class="mb-3">
+                <label for="paquete_id" class="form-label">ID Paquete</label>
+                <input type="text" class="form-control" name="paquete_id" id="paquete_id" aria-describedby="helpId" 
+                    placeholder="" readonly />
+                <small id="helpId" class="form-text text-muted">ID del paquete (se genera automáticamente)</small>
+            </div>
+            <div class="mb-3">
+                <a name="guardardatos" id="guardardatos" class="btn btn-primary" role="button">Guardar</a>
+
+                <a name="actualizardatos" id="actualizardatos" class="btn btn-success" style="display: none;"
+                    role="button">Actualizar</a>
+
+                <input onclick="limpiarFormulario()" class="btn btn-danger" type="button" value="Limpiar" />
+
+            </div>
+
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Destinos</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Duración</th>
+                        <th scope="col">Temporada</th>
+                        <th scope="col">Cupo</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="listadatos">
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <footer>
+        <!-- place footer here -->
+    </footer>
+
+    <script>
+
+        function limpiarFormulario() {
+            $("#paquete_id").val("");
+            $("#nombre").val("");
+            $("#descripcion").val("");
+            $("#destinos").val("");
+            $("#precio").val("");
+            $("#duracion_dias").val("");
+            $("#temporada").val("todo_el_año");
+            $("#cupo_disponible").val("");
+            $("#personalizable").prop("checked", true);
+            $("#activo").prop("checked", true);
+            
+            // Limpiar checkboxes de servicios
+            $('input[type="checkbox"][id^="incluye_"]').prop("checked", false);
+            
+            $("#guardardatos").show();
+            $("#actualizardatos").hide();
+        }
+
+        function obtenerServiciosIncluidos() {
+            const servicios = [];
+            $('input[type="checkbox"][id^="incluye_"]:checked').each(function() {
+                servicios.push($(this).val());
+            });
+            return servicios;
+        }
+
+        function establecerServiciosIncluidos(servicios) {
+            $('input[type="checkbox"][id^="incluye_"]').prop("checked", false);
+            servicios.forEach(servicio => {
+                $(`#incluye_${servicio}`).prop("checked", true);
+            });
+        }
+
+        $(document).ready(function () {
+
+            const API_URL = 'http://localhost:3000/api/paquetes/';
+
+            //Funciones
+
+            function cargarDatos() {
+                $.get(API_URL, function (data) {
+                    console.log(data);
+                    $("#listadatos").empty();
+                    data.forEach((item) => {
+                        const destinos = Array.isArray(item.destinos) ? item.destinos.join(", ") : item.destinos || 'N/A';
+                        const estado = item.activo ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>';
+                        $("#listadatos").append(
+                            `<tr class="">
+                            <td scope="row">${item._id}</td>
+                            <td>${item.nombre || 'N/A'}</td>
+                            <td>${destinos}</td>
+                            <td>$${item.precio || 'N/A'}</td>
+                            <td>${item.duracion_dias || 'N/A'} días</td>
+                            <td>${item.temporada || 'N/A'}</td>
+                            <td>${item.cupo_disponible || 'N/A'}</td>
+                            <td>${estado}</td>
+                            <td>
+                                <a
+                                    name=""
+                                    id=""
+                                    class="btn btn-primary btn-sm"
+                                    onclick="editarDatos('${item._id}','${item.nombre || ''}','${item.descripcion || ''}','${destinos}','${item.precio || ''}','${item.duracion_dias || ''}','${item.temporada || ''}','${item.cupo_disponible || ''}','${item.personalizable}','${item.activo}','${JSON.stringify(item.incluye || [])}')"
+                                    role="button"
+                                    >Editar</a
+                                >
+                                
+                                <a
+                                    name=""
+                                    id=""
+                                    class="btn btn-danger btn-sm"
+                                    onclick="eliminarDatos('${item._id}')"
+                                    role="button"
+                                    >Eliminar</a
+                                >
+
+                            </td>
+                        </tr>`);
+                    });
+                });
+            }
+
+            //guardardatos
+            $("#guardardatos").click(function (e) {
+
+                const nuevoDato = {
+                    nombre: $("#nombre").val(),
+                    descripcion: $("#descripcion").val(),
+                    destinos: $("#destinos").val().split(",").map(d => d.trim()).filter(d => d),
+                    precio: $("#precio").val(),
+                    duracion_dias: $("#duracion_dias").val(),
+                    temporada: $("#temporada").val(),
+                    incluye: obtenerServiciosIncluidos(),
+                    personalizable: $("#personalizable").is(":checked"),
+                    cupo_disponible: $("#cupo_disponible").val(),
+                    activo: $("#activo").is(":checked")
+                };
+
+                $.ajax({
+                    url: API_URL,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(nuevoDato),
+                    success: function () {
+                        alert("Paquete creado exitosamente");
+                        limpiarFormulario();
+                        cargarDatos();
+                    },
+                    error: function (err) {
+                        alert('Error al crear paquete: ' + err.responseJSON?.mensaje || err.statusText);
+                    }
+                });
+            });
+
+            //actualizardatos
+            $("#actualizardatos").click(function (e) {
+                const paqueteId = $("#paquete_id").val();
+                
+                const datosActualizados = {
+                    nombre: $("#nombre").val(),
+                    descripcion: $("#descripcion").val(),
+                    destinos: $("#destinos").val().split(",").map(d => d.trim()).filter(d => d),
+                    precio: $("#precio").val(),
+                    duracion_dias: $("#duracion_dias").val(),
+                    temporada: $("#temporada").val(),
+                    incluye: obtenerServiciosIncluidos(),
+                    personalizable: $("#personalizable").is(":checked"),
+                    cupo_disponible: $("#cupo_disponible").val(),
+                    activo: $("#activo").is(":checked")
+                };
+
+                $.ajax({
+                    url: API_URL + paqueteId,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(datosActualizados),
+                    success: function () {
+                        alert("Paquete actualizado exitosamente");
+                        limpiarFormulario();
+                        cargarDatos();
+                    },
+                    error: function (err) {
+                        alert('Error al actualizar paquete: ' + err.responseJSON?.mensaje || err.statusText);
+                    }
+                });
+            });
+
+            //Fin de funciones y eventos    
+
+            cargarDatos();
+
+        });
+
+        window.editarDatos = function (id, nombre, descripcion, destinos, precio, duracion_dias, temporada, cupo_disponible, personalizable, activo, incluye) {
+            $("#paquete_id").val(id);
+            $("#nombre").val(nombre);
+            $("#descripcion").val(descripcion);
+            $("#destinos").val(destinos);
+            $("#precio").val(precio);
+            $("#duracion_dias").val(duracion_dias);
+            $("#temporada").val(temporada);
+            $("#cupo_disponible").val(cupo_disponible);
+            $("#personalizable").prop("checked", personalizable === "true");
+            $("#activo").prop("checked", activo === "true");
+            
+            try {
+                const servicios = JSON.parse(incluye);
+                establecerServiciosIncluidos(servicios);
+            } catch (e) {
+                console.log("Error parsing servicios:", e);
+            }
+            
+            $("#guardardatos").hide();
+            $("#actualizardatos").show();
+        }
+
+        window.eliminarDatos = function (id) {
+            if (confirm("¿Está seguro de que desea eliminar este paquete?")) {
+                $.ajax({
+                    url: 'http://localhost:3000/api/paquetes/' + id,
+                    type: 'DELETE',
+                    success: function () {
+                        alert("Paquete eliminado exitosamente");
+                        cargarDatos();
+                    },
+                    error: function (err) {
+                        alert('Error al eliminar paquete: ' + err.responseJSON?.mensaje || err.statusText);
+                    }
+                });
+            }
+        }
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

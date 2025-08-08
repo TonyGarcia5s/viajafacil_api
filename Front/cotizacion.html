@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <title>Cotizaciones - ViajaFácil</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Bootstrap CSS v5.2.1 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <header>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="navId" role="tablist">
+            <li class="nav-item">
+                <a href="#tab1Id" class="nav-link active" data-bs-toggle="tab" aria-current="page">ViajaFácil</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                    aria-haspopup="true" aria-expanded="false">Módulos</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="clientes.html">Clientes</a>
+                    <a class="dropdown-item" href="paquetes.html">Paquetes</a>
+                    <a class="dropdown-item" href="cotizacion.html">Cotizaciones</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#tab4Id">Reportes</a>
+                </div>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#tab5Id" class="nav-link" data-bs-toggle="tab">Configuración</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#" class="nav-link disabled" data-bs-toggle="tab">Ayuda</a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="tab1Id" role="tabpanel">
+            </div>
+            <div class="tab-pane fade" id="tab2Id" role="tabpanel"></div>
+            <div class="tab-pane fade" id="tab3Id" role="tabpanel"></div>
+            <div class="tab-pane fade" id="tab4Id" role="tabpanel"></div>
+            <div class="tab-pane fade" id="tab5Id" role="tabpanel"></div>
+        </div>
+    </header>
+
+    <div class="container mt-4">
+        <h1>Gestión de Cotizaciones</h1>
+
+        <div class="table-responsive mt-4">
+            <table class="table table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Paquete</th>
+                        <th>Precio Final</th>
+                        <th>Estado</th>
+                        <th>Detalles</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="listadatos">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <!-- place footer here -->
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            const API_URL = "http://localhost:3000/api/cotizaciones/";
+
+            function cargarDatos() {
+                console.log("Cargando cotizaciones...");
+                $.get(API_URL, function (data) {
+                    console.log("Datos recibidos:", data);
+                    $("#listadatos").empty();
+
+                    if (Array.isArray(data) && data.length > 0) {
+                        data.forEach((item) => {
+                            const fecha = item.fecha_cotizacion
+                                ? new Date(item.fecha_cotizacion).toLocaleDateString()
+                                : "N/A";
+
+                            const cliente = (item.cliente_id && typeof item.cliente_id === "object")
+                                ? (item.cliente_id.nombre || "Sin nombre")
+                                : (item.cliente_id || "N/A");
+
+                            const paquete = (item.paquete_id && typeof item.paquete_id === "object")
+                                ? (item.paquete_id.nombre || "Sin nombre")
+                                : (item.paquete_id || "N/A");
+
+                            $("#listadatos").append(`
+                            <tr>
+                                <td>${cliente}</td>
+                                <td>${paquete}</td>
+                                <td>$${item.precio_final || 0}</td>
+                                <td>
+                                    <span class="badge bg-${getEstadoColor(item.estado)}">
+                                        ${item.estado || "Desconocido"}
+                                    </span>
+                                </td>
+                                <td>${item.detalles_adicionales || 'N/A'}</td>
+                                <td>${fecha}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" onclick="editarCotizacion('${item._id}')">
+                                        Editar
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="eliminarCotizacion('${item._id}')">
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        `);
+                        });
+                    } else {
+                        $("#listadatos").append(`
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                No hay cotizaciones registradas
+                            </td>
+                        </tr>
+                    `);
+                    }
+                }).fail(function (error) {
+                    console.error("Error al cargar datos:", error);
+                    $("#listadatos").empty().append(`
+                    <tr>
+                        <td colspan="7" class="text-center text-danger">
+                            Error al cargar las cotizaciones: ${error.statusText}
+                        </td>
+                    </tr>
+                `);
+                });
+            }
+
+            function getEstadoColor(estado) {
+                if (!estado) return "secondary";
+                switch (estado.toLowerCase()) {
+                    case 'pendiente': return 'warning';
+                    case 'aprobada': return 'success';
+                    case 'rechazada': return 'danger';
+                    case 'cancelada': return 'secondary';
+                    default: return 'primary';
+                }
+            }
+
+            // Declarar las funciones globales ANTES
+            window.editarCotizacion = function (id) {
+                console.log("Editando cotización:", id);
+                // Aquí iría la lógica de edición
+            };
+
+            window.eliminarCotizacion = function (id) {
+                if (confirm("¿Está seguro de que desea eliminar esta cotización?")) {
+                    $.ajax({
+                        url: API_URL + id,
+                        type: 'DELETE',
+                        success: function () {
+                            alert("Cotización eliminada exitosamente");
+                            cargarDatos();
+                        },
+                        error: function (error) {
+                            alert("Error al eliminar la cotización: " + error.statusText);
+                        }
+                    });
+                }
+            };
+
+            // Cargar datos al iniciar
+            cargarDatos();
+        });
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

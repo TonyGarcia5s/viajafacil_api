@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <title>Gestión de Cotizaciones - ViajaFácil</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Bootstrap CSS v5.2.1 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <header>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="navId" role="tablist">
+            <li class="nav-item">
+                <a href="#tab1Id" class="nav-link active" data-bs-toggle="tab" aria-current="page">ViajaFácil</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                    aria-haspopup="true" aria-expanded="false">Módulos</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="clientes.html">Clientes</a>
+                    <a class="dropdown-item" href="paquetes.html">Paquetes</a>
+                    <a class="dropdown-item" href="cotizacion.html">Cotizaciones</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#tab4Id">Reportes</a>
+                </div>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#tab5Id" class="nav-link" data-bs-toggle="tab">Configuración</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#" class="nav-link disabled" data-bs-toggle="tab">Ayuda</a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="tab1Id" role="tabpanel">
+
+            </div>
+            <div class="tab-pane fade" id="tab2Id" role="tabpanel"></div>
+            <div class="tab-pane fade" id="tab3Id" role="tabpanel"></div>
+            <div class="tab-pane fade" id="tab4Id" role="tabpanel"></div>
+            <div class="tab-pane fade" id="tab5Id" role="tabpanel"></div>
+        </div>
+
+    </header>
+    <div class="container">
+        <h1>Gestión de Cotizaciones</h1>
+
+        <div class="container">
+
+            <div class="mb-3">
+                <label for="cliente_id" class="form-label">Cliente ID</label>
+                <input type="text" class="form-control" name="cliente_id" id="cliente_id" aria-describedby="helpId"
+                    placeholder="ID del cliente" />
+                <small id="helpId" class="form-text text-muted">Ingrese el ID del cliente</small>
+            </div>
+            <div class="mb-3">
+                <label for="paquete_id" class="form-label">Paquete ID</label>
+                <input type="text" class="form-control" name="paquete_id" id="paquete_id" aria-describedby="helpId"
+                    placeholder="ID del paquete" />
+                <small id="helpId" class="form-text text-muted">Ingrese el ID del paquete</small>
+            </div>
+            <div class="mb-3">
+                <label for="precio_final" class="form-label">Precio Final</label>
+                <input type="number" class="form-control" name="precio_final" id="precio_final" aria-describedby="helpId"
+                    placeholder="Precio final" />
+                <small id="helpId" class="form-text text-muted">Ingrese el precio final</small>
+            </div>
+            <div class="mb-3">
+                <label for="estado" class="form-label">Estado</label>
+                <select class="form-select" name="estado" id="estado" aria-describedby="helpId">
+                    <option value="pendiente">Pendiente</option>
+                    <option value="aprobada">Aprobada</option>
+                    <option value="rechazada">Rechazada</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
+                <small id="helpId" class="form-text text-muted">Seleccione el estado de la cotización</small>
+            </div>
+            <div class="mb-3">
+                <label for="detalles_adicionales" class="form-label">Detalles Adicionales</label>
+                <textarea class="form-control" name="detalles_adicionales" id="detalles_adicionales" rows="3"
+                    placeholder="Detalles adicionales"></textarea>
+                <small id="helpId" class="form-text text-muted">Ingrese detalles adicionales</small>
+            </div>
+            <div class="mb-3">
+                <label for="cotizacion_id" class="form-label">ID Cotización</label>
+                <input type="text" class="form-control" name="cotizacion_id" id="cotizacion_id" aria-describedby="helpId"
+                    placeholder="" readonly />
+                <small id="helpId" class="form-text text-muted">ID de la cotización (se genera automáticamente)</small>
+            </div>
+            <div class="mb-3">
+                <a name="guardardatos" id="guardardatos" class="btn btn-primary" role="button">Guardar</a>
+
+                <a name="actualizardatos" id="actualizardatos" class="btn btn-success" style="display: none;"
+                    role="button">Actualizar</a>
+
+                <input onclick="limpiarFormulario()" class="btn btn-danger" type="button" value="Limpiar" />
+
+            </div>
+
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Paquete</th>
+                        <th scope="col">Precio Final</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="listadatos">
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <footer>
+        <!-- place footer here -->
+    </footer>
+
+    <script>
+
+        function limpiarFormulario() {
+            $("#cotizacion_id").val("");
+            $("#cliente_id").val("");
+            $("#paquete_id").val("");
+            $("#precio_final").val("");
+            $("#estado").val("pendiente");
+            $("#detalles_adicionales").val("");
+            $("#guardardatos").show();
+            $("#actualizardatos").hide();
+        }
+
+        $(document).ready(function () {
+
+            const API_URL = 'http://localhost:3000/api/cotizaciones/';
+
+            //Funciones
+
+            function cargarDatos() {
+                $.get(API_URL, function (data) {
+                    console.log(data);
+                    $("#listadatos").empty();
+                    data.forEach((item) => {
+                        const fecha = new Date(item.fecha_cotizacion).toLocaleDateString();
+                        $("#listadatos").append(
+                            `<tr class="">
+                            <td scope="row">${item._id}</td>
+                            <td>${item.cliente_id ? item.cliente_id.nombre || item.cliente_id : 'N/A'}</td>
+                            <td>${item.paquete_id ? item.paquete_id.nombre || item.paquete_id : 'N/A'}</td>
+                            <td>$${item.precio_final}</td>
+                            <td><span class="badge bg-${getEstadoColor(item.estado)}">${item.estado}</span></td>
+                            <td>${fecha}</td>
+                            <td>
+                                <a
+                                    name=""
+                                    id=""
+                                    class="btn btn-primary btn-sm"
+                                    onclick="editarDatos('${item._id}','${item.cliente_id}','${item.paquete_id}','${item.precio_final}','${item.estado}','${item.detalles_adicionales || ''}')"
+                                    role="button"
+                                    >Editar</a
+                                >
+                                
+                                <a
+                                    name=""
+                                    id=""
+                                    class="btn btn-danger btn-sm"
+                                    onclick="eliminarDatos('${item._id}')"
+                                    role="button"
+                                    >Eliminar</a
+                                >
+
+                            </td>
+                        </tr>`);
+                    });
+                });
+            }
+
+            function getEstadoColor(estado) {
+                switch(estado) {
+                    case 'pendiente': return 'warning';
+                    case 'aprobada': return 'success';
+                    case 'rechazada': return 'danger';
+                    case 'cancelada': return 'secondary';
+                    default: return 'primary';
+                }
+            }
+
+            //guardardatos
+            $("#guardardatos").click(function (e) {
+
+                const nuevoDato = {
+                    cliente_id: $("#cliente_id").val(),
+                    paquete_id: $("#paquete_id").val(),
+                    precio_final: $("#precio_final").val(),
+                    estado: $("#estado").val(),
+                    detalles_adicionales: $("#detalles_adicionales").val()
+                };
+
+                $.ajax({
+                    url: API_URL,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(nuevoDato),
+                    success: function () {
+                        alert("Cotización creada exitosamente");
+                        limpiarFormulario();
+                        cargarDatos();
+                    },
+                    error: function (err) {
+                        alert('Error al crear cotización: ' + err.responseJSON?.mensaje || err.statusText);
+                    }
+                });
+            });
+
+            //actualizardatos
+            $("#actualizardatos").click(function (e) {
+                const cotizacionId = $("#cotizacion_id").val();
+                
+                const datosActualizados = {
+                    cliente_id: $("#cliente_id").val(),
+                    paquete_id: $("#paquete_id").val(),
+                    precio_final: $("#precio_final").val(),
+                    estado: $("#estado").val(),
+                    detalles_adicionales: $("#detalles_adicionales").val()
+                };
+
+                $.ajax({
+                    url: API_URL + cotizacionId,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(datosActualizados),
+                    success: function () {
+                        alert("Cotización actualizada exitosamente");
+                        limpiarFormulario();
+                        cargarDatos();
+                    },
+                    error: function (err) {
+                        alert('Error al actualizar cotización: ' + err.responseJSON?.mensaje || err.statusText);
+                    }
+                });
+            });
+
+            //Fin de funciones y eventos    
+
+            cargarDatos();
+
+        });
+
+        window.editarDatos = function (id, cliente_id, paquete_id, precio_final, estado, detalles_adicionales) {
+            $("#cotizacion_id").val(id);
+            $("#cliente_id").val(cliente_id);
+            $("#paquete_id").val(paquete_id);
+            $("#precio_final").val(precio_final);
+            $("#estado").val(estado);
+            $("#detalles_adicionales").val(detalles_adicionales);
+            $("#guardardatos").hide();
+            $("#actualizardatos").show();
+        }
+
+        window.eliminarDatos = function (id) {
+            if (confirm("¿Está seguro de que desea eliminar esta cotización?")) {
+                $.ajax({
+                    url: 'http://localhost:3000/api/cotizaciones/' + id,
+                    type: 'DELETE',
+                    success: function () {
+                        alert("Cotización eliminada exitosamente");
+                        cargarDatos();
+                    },
+                    error: function (err) {
+                        alert('Error al eliminar cotización: ' + err.responseJSON?.mensaje || err.statusText);
+                    }
+                });
+            }
+        }
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
