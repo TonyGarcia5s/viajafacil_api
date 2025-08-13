@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <title>Gestión de Recomendaciones - ViajaFácil</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1>Gestión de Recomendaciones</h1>
+
+        <!-- Formulario -->
+        <div class="mb-3">
+            <label class="form-label">Cliente ID</label>
+            <input type="text" id="cliente_id" class="form-control" placeholder="ID del cliente" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Temporada</label>
+            <input type="text" id="temporada" class="form-control" placeholder="Ej: Verano, Invierno" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Paquetes Sugeridos (formato: paquete_id|razón, separados por comas)</label>
+            <input type="text" id="paquetes_sugeridos" class="form-control" placeholder="PKG001|Buena oferta, PKG002|Clima ideal" />
+        </div>
+
+        <input type="hidden" id="rec_id" />
+
+        <div class="mb-3">
+            <button id="guardar" class="btn btn-primary">Guardar</button>
+            <button id="actualizar" class="btn btn-success" style="display:none;">Actualizar</button>
+            <button onclick="limpiarFormulario()" class="btn btn-danger">Limpiar</button>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente ID</th>
+                        <th>Temporada</th>
+                        <th>Paquetes Sugeridos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="listadatos"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:3000/api/recomendaciones/";
+
+        function limpiarFormulario() {
+            $("#rec_id").val("");
+            $("#cliente_id").val("");
+            $("#temporada").val("");
+            $("#paquetes_sugeridos").val("");
+            $("#guardar").show();
+            $("#actualizar").hide();
+        }
+
+        function cargarDatos() {
+            $.get(API_URL, function (data) {
+                $("#listadatos").empty();
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        let paquetes = (item.paquetes_sugeridos || []).map(p => `${p.paquete_id} (${p.razon})`).join(", ");
+                        $("#listadatos").append(`
+                            <tr>
+                                <td>${item._id}</td>
+                                <td>${item.cliente_id || "N/A"}</td>
+                                <td>${item.temporada || "N/A"}</td>
+                                <td>${paquetes}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" onclick="editarDatos('${item._id}','${item.cliente_id}','${item.temporada}','${(item.paquetes_sugeridos || []).map(p => `${p.paquete_id}|${p.razon}`).join(",")}')">Editar</button>
+                                    <button class="btn btn-danger btn-sm" onclick="eliminarDatos('${item._id}')">Eliminar</button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    $("#listadatos").append('<tr><td colspan="5" class="text-center">No hay recomendaciones registradas</td></tr>');
+                }
+            });
+        }
+
+        $("#guardar").click(function () {
+            const paquetes = $("#paquetes_sugeridos").val().split(",").map(e => {
+                let [id, razon] = e.trim().split("|");
+                return { paquete_id: id?.trim() || "", razon: razon?.trim() || "" };
+            }).filter(p => p.paquete_id);
+
+            const nuevaRec = {
+                cliente_id: $("#cliente_id").val(),
+                temporada: $("#temporada").val(),
+                paquetes_sugeridos: paquetes
+            };
+
+            $.ajax({
+                url: API_URL,
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(nuevaRec),
+                success: function () {
+                    alert("Recomendación creada correctamente");
+                    limpiarFormulario();
+                    cargarDatos();
+                },
+                error: function (err) {
+                    alert("Error al crear recomendación: " + err.statusText);
+                }
+            });
+        });
+
+        $("#actualizar").click(function () {
+            const id = $("#rec_id").val();
+            const paquetes = $("#paquetes_sugeridos").val().split(",").map(e => {
+                let [id, razon] = e.trim().split("|");
+                return { paquete_id: id?.trim() || "", razon: razon?.trim() || "" };
+            }).filter(p => p.paquete_id);
+
+            const datos = {
+                cliente_id: $("#cliente_id").val(),
+                temporada: $("#temporada").val(),
+                paquetes_sugeridos: paquetes
+            };
+
+            $.ajax({
+                url: API_URL + id,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(datos),
+                success: function () {
+                    alert("Recomendación actualizada correctamente");
+                    limpiarFormulario();
+                    cargarDatos();
+                },
+                error: function (err) {
+                    alert("Error al actualizar recomendación: " + err.statusText);
+                }
+            });
+        });
+
+        window.editarDatos = function (id, cliente_id, temporada, paquetes) {
+            $("#rec_id").val(id);
+            $("#cliente_id").val(cliente_id);
+            $("#temporada").val(temporada);
+            $("#paquetes_sugeridos").val(paquetes);
+            $("#guardar").hide();
+            $("#actualizar").show();
+        };
+
+        window.eliminarDatos = function (id) {
+            if (confirm("¿Desea eliminar esta recomendación?")) {
+                $.ajax({
+                    url: API_URL + id,
+                    type: "DELETE",
+                    success: function () {
+                        alert("Recomendación eliminada correctamente");
+                        cargarDatos();
+                    },
+                    error: function (err) {
+                        alert("Error al eliminar recomendación: " + err.statusText);
+                    }
+                });
+            }
+        };
+
+        $(document).ready(function () {
+            cargarDatos();
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

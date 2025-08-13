@@ -1,10 +1,14 @@
-module.exports = {
-  cliente_id: "cliente1_id",
-  temporada: "verano",
+const mongoose = require('mongoose');
+
+const recomendacionesSchema = new mongoose.Schema({
+  cliente_id: String,
+  temporada: String,
   paquetes_sugeridos: [
     {
-      paquete_id: "paquete1_id",
-      razon: "Clima cálido y actividades de aventura"
+      paquete_id: String,
+      razon: String
     }
   ]
-};
+});
+
+module.exports = mongoose.model('Recomendacion', recomendacionesSchema);

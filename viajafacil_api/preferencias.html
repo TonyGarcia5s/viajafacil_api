@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <title>Gestión de Preferencias - ViajaFácil</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1>Gestión de Preferencias</h1>
+
+        <!-- Formulario -->
+        <div class="mb-3">
+            <label class="form-label">Cliente ID</label>
+            <input type="text" id="cliente_id" class="form-control" placeholder="ID del cliente" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Clima Preferido</label>
+            <input type="text" id="preferencias_clima" class="form-control" placeholder="Ej: Tropical, Frío" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Tipos de Destinos (separados por coma)</label>
+            <input type="text" id="tipos_destinos" class="form-control" placeholder="Playa, Montaña, Ciudad" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Actividades Favoritas (separadas por coma)</label>
+            <input type="text" id="actividades_favoritas" class="form-control" placeholder="Senderismo, Buceo, Compras" />
+        </div>
+
+        <input type="hidden" id="pref_id" />
+
+        <div class="mb-3">
+            <button id="guardar" class="btn btn-primary">Guardar</button>
+            <button id="actualizar" class="btn btn-success" style="display:none;">Actualizar</button>
+            <button onclick="limpiarFormulario()" class="btn btn-danger">Limpiar</button>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente ID</th>
+                        <th>Clima</th>
+                        <th>Tipos de Destinos</th>
+                        <th>Actividades Favoritas</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="listadatos"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:3000/api/preferencias/";
+
+        function limpiarFormulario() {
+            $("#pref_id").val("");
+            $("#cliente_id").val("");
+            $("#preferencias_clima").val("");
+            $("#tipos_destinos").val("");
+            $("#actividades_favoritas").val("");
+            $("#guardar").show();
+            $("#actualizar").hide();
+        }
+
+        function cargarDatos() {
+            $.get(API_URL, function (data) {
+                $("#listadatos").empty();
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        $("#listadatos").append(`
+                            <tr>
+                                <td>${item._id}</td>
+                                <td>${item.cliente_id || "N/A"}</td>
+                                <td>${item.preferencias_clima || "N/A"}</td>
+                                <td>${(item.tipos_destinos || []).join(", ")}</td>
+                                <td>${(item.actividades_favoritas || []).join(", ")}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" onclick="editarDatos('${item._id}','${item.cliente_id}','${item.preferencias_clima}','${(item.tipos_destinos || []).join(",")}','${(item.actividades_favoritas || []).join(",")}')">Editar</button>
+                                    <button class="btn btn-danger btn-sm" onclick="eliminarDatos('${item._id}')">Eliminar</button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    $("#listadatos").append('<tr><td colspan="6" class="text-center">No hay preferencias registradas</td></tr>');
+                }
+            });
+        }
+
+        $("#guardar").click(function () {
+            const nuevaPref = {
+                cliente_id: $("#cliente_id").val(),
+                preferencias_clima: $("#preferencias_clima").val(),
+                tipos_destinos: $("#tipos_destinos").val().split(",").map(e => e.trim()).filter(e => e),
+                actividades_favoritas: $("#actividades_favoritas").val().split(",").map(e => e.trim()).filter(e => e)
+            };
+
+            $.ajax({
+                url: API_URL,
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(nuevaPref),
+                success: function () {
+                    alert("Preferencia creada correctamente");
+                    limpiarFormulario();
+                    cargarDatos();
+                },
+                error: function (err) {
+                    alert("Error al crear preferencia: " + err.statusText);
+                }
+            });
+        });
+
+        $("#actualizar").click(function () {
+            const id = $("#pref_id").val();
+            const datos = {
+                cliente_id: $("#cliente_id").val(),
+                preferencias_clima: $("#preferencias_clima").val(),
+                tipos_destinos: $("#tipos_destinos").val().split(",").map(e => e.trim()).filter(e => e),
+                actividades_favoritas: $("#actividades_favoritas").val().split(",").map(e => e.trim()).filter(e => e)
+            };
+
+            $.ajax({
+                url: API_URL + id,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(datos),
+                success: function () {
+                    alert("Preferencia actualizada correctamente");
+                    limpiarFormulario();
+                    cargarDatos();
+                },
+                error: function (err) {
+                    alert("Error al actualizar preferencia: " + err.statusText);
+                }
+            });
+        });
+
+        window.editarDatos = function (id, cliente_id, clima, destinos, actividades) {
+            $("#pref_id").val(id);
+            $("#cliente_id").val(cliente_id);
+            $("#preferencias_clima").val(clima);
+            $("#tipos_destinos").val(destinos);
+            $("#actividades_favoritas").val(actividades);
+            $("#guardar").hide();
+            $("#actualizar").show();
+        };
+
+        window.eliminarDatos = function (id) {
+            if (confirm("¿Desea eliminar esta preferencia?")) {
+                $.ajax({
+                    url: API_URL + id,
+                    type: "DELETE",
+                    success: function () {
+                        alert("Preferencia eliminada correctamente");
+                        cargarDatos();
+                    },
+                    error: function (err) {
+                        alert("Error al eliminar preferencia: " + err.statusText);
+                    }
+                });
+            }
+        };
+
+        $(document).ready(function () {
+            cargarDatos();
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

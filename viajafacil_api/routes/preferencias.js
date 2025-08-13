@@ -16,30 +16,36 @@ router.get('/', async (req, res) => {
   res.json(preferencia);
 });
 
-//PUT para preferencias
-router.put('/:id', async(req, res) =>{
-        const datoPref = await preferencias.findOneAndUpdate({
-                id: req.params.id}, req.body, {new: true                
-            });
-        if (dato){
-            res.json(datoPref);
-        }
-        else{
-            res.status(404).json({error: "No se encontro el elemento para actualizar"});
-        }
+// PUT para actualizar preferencia por _id
+router.put('/:id', async (req, res) => {
+  try {
+    const datoPref = await preferencias.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (datoPref) {
+      res.json(datoPref);
+    } else {
+      res.status(404).json({ error: "No se encontró el elemento para actualizar" });
     }
-);
+  } catch (err) {
+    res.status(400).json({ error: "ID inválido" });
+  }
+});
 
-//DELETE para preferencias
-router.delete('/:id', async(req, res) =>{
-        const datoPref = await preferencias.findOneAndDelete({id: req.params.id});
-        if (datoPref) {
-            res.status(200).json({mensaje: "El elemento fue eliminado"});
-        }
-        else{
-            res.status(404).json({error: "No se encontro el elemento"});
-        }
+// DELETE para eliminar preferencia por _id
+router.delete('/:id', async (req, res) => {
+  try {
+    const datoPref = await preferencias.findByIdAndDelete(req.params.id);
+    if (datoPref) {
+      res.status(200).json({ mensaje: "El elemento fue eliminado" });
+    } else {
+      res.status(404).json({ error: "No se encontró el elemento" });
     }
-);
+  } catch (err) {
+    res.status(400).json({ error: "ID inválido" });
+  }
+});
 
+router.get('/cliente/:clienteId', async (req, res) => {
+  const lista = await preferencias.find({ cliente_id: req.params.clienteId });
+  res.json(lista);
+});
 module.exports = router;

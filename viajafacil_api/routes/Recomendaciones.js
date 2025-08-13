@@ -15,30 +15,44 @@ router.get('/', async (req, res) => {
   res.json(recomendacion);
 });
 
-//PUT para recomendaciones
-router.put('/:id', async(req, res) =>{
-        const datorec = await recomendaciones.findOneAndUpdate({
-                id: req.params.id}, req.body, {new: true                
-            });
-        if (dato){
-            res.json(datorec);
-        }
-        else{
-            res.status(404).json({error: "No se encontro el elemento para actualizar"});
-        }
+// PUT para actualizar recomendación por _id
+router.put('/:id', async (req, res) => {
+  try {
+    const datoRec = await recomendaciones.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (datoRec) {
+      res.json(datoRec);
+    } else {
+      res.status(404).json({ error: "No se encontró el elemento para actualizar" });
     }
-);
+  } catch (err) {
+    res.status(400).json({ error: "ID inválido" });
+  }
+});
 
-//DELETE para recomendaciones
-router.delete('/:id', async(req, res) =>{
-        const datorec = await recomendaciones.findOneAndDelete({id: req.params.id});
-        if (datorec) {
-            res.status(200).json({mensaje: "El elemento fue eliminado"});
-        }
-        else{
-            res.status(404).json({error: "No se encontro el elemento"});
-        }
+// DELETE para eliminar recomendación por _id
+router.delete('/:id', async (req, res) => {
+  try {
+    const datoRec = await recomendaciones.findByIdAndDelete(req.params.id);
+    if (datoRec) {
+      res.status(200).json({ mensaje: "El elemento fue eliminado" });
+    } else {
+      res.status(404).json({ error: "No se encontró el elemento" });
     }
-);
+  } catch (err) {
+    res.status(400).json({ error: "ID inválido" });
+  }
+});
+
+// GET recomendaciones por cliente_id
+router.get('/cliente/:clienteId', async (req, res) => {
+  const lista = await recomendaciones.find({ cliente_id: req.params.clienteId });
+  res.json(lista);
+});
+
+// GET recomendaciones por temporada
+router.get('/temporada/:temp', async (req, res) => {
+  const lista = await recomendaciones.find({ temporada: req.params.temp });
+  res.json(lista);
+});
 
 module.exports = router;
