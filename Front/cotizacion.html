@@ -26,8 +26,8 @@
                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
                     aria-haspopup="true" aria-expanded="false">Módulos</a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="clientes.html">Clientes</a>
-                    <a class="dropdown-item" href="paquetes.html">Paquetes</a>
+                    <a class="dropdown-item" href="cliente.html">Clientes</a>
+                    <a class="dropdown-item" href="paquete.html">Paquetes</a>
                     <a class="dropdown-item" href="cotizacion.html">Cotizaciones</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#tab4Id">Reportes</a>
@@ -53,7 +53,10 @@
     </header>
 
     <div class="container mt-4">
-        <h1>Gestión de Cotizaciones</h1>
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>Gestión de Cotizaciones</h1>
+            <button class="btn btn-success" id="btnNuevo">Nueva Cotización</button>
+        </div>
 
         <div class="table-responsive mt-4">
             <table class="table table-hover">
@@ -61,6 +64,7 @@
                     <tr>
                         <th>Cliente</th>
                         <th>Paquete</th>
+                        <th>Personas</th>
                         <th>Precio Final</th>
                         <th>Estado</th>
                         <th>Detalles</th>
@@ -74,121 +78,521 @@
         </div>
     </div>
 
+    <!-- Modal para Cotización -->
+    <div class="modal fade" id="cotizacionModal" tabindex="-1" aria-labelledby="cotizacionModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cotizacionModalLabel">Nueva Cotización</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cotizacionForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="cliente_id" class="form-label">Cliente</label>
+                                    <select class="form-select" name="cliente_id" id="cliente_id" required>
+                                        <option value="">Seleccione un cliente</option>
+                                    </select>
+                                    <small class="form-text text-muted">Seleccione el cliente</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="paquete_id" class="form-label">Paquete</label>
+                                    <select class="form-select" name="paquete_id" id="paquete_id" required>
+                                        <option value="">Seleccione un paquete</option>
+                                    </select>
+                                    <small class="form-text text-muted">Seleccione el paquete</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="estado" class="form-label">Estado</label>
+                                    <select class="form-select" name="estado" id="estado" required>
+                                        <option value="">Seleccione estado</option>
+                                        <option value="pendiente">Pendiente</option>
+                                        <option value="aprobada">Aprobada</option>
+                                        <option value="rechazada">Rechazada</option>
+                                        <option value="cancelada">Cancelada</option>
+                                    </select>
+                                    <small class="form-text text-muted">Seleccione el estado</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="num_personas" class="form-label">Número de Personas</label>
+                                    <input type="number" class="form-control" name="num_personas" id="num_personas" 
+                                        placeholder="1" min="1" value="1" required />
+                                    <small class="form-text text-muted">Cantidad de personas para el viaje</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="precio_final" class="form-label">Precio Final</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" name="precio_final" id="precio_final"
+                                            placeholder="0.00" min="0" step="0.01" required readonly />
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <span id="precioInfo">Seleccione un paquete para ver el precio base</span>
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ajuste_precio" class="form-label">Ajuste de Precio (Opcional)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" name="ajuste_precio"
+                                            id="ajuste_precio" placeholder="0.00" step="0.01" />
+                                        <select class="form-select" id="tipo_ajuste" style="max-width: 120px;">
+                                            <option value="+">+</option>
+                                            <option value="-">-</option>
+                                        </select>
+                                    </div>
+                                    <small class="form-text text-muted">Ajuste adicional por persona</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Resumen de Precios</label>
+                                    <div class="alert alert-info">
+                                        <div class="row">
+                                            <div class="col-6">Precio Base:</div>
+                                            <div class="col-6" id="precioBase">$0.00</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">Número de Personas:</div>
+                                            <div class="col-6" id="numPersonas">1</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">Subtotal Base:</div>
+                                            <div class="col-6" id="subtotalBase">$0.00</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">Ajuste por Persona:</div>
+                                            <div class="col-6" id="precioAjuste">$0.00</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">Total Ajuste:</div>
+                                            <div class="col-6" id="totalAjuste">$0.00</div>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="row fw-bold">
+                                            <div class="col-6">Total Final:</div>
+                                            <div class="col-6" id="precioTotal">$0.00</div>
+                                        </div>
+                                        <small class="text-muted">Precio por persona: <span id="precioPorPersona">$0.00</span></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="detalles_adicionales" class="form-label">Detalles Adicionales</label>
+                            <textarea class="form-control" name="detalles_adicionales" id="detalles_adicionales"
+                                rows="3" placeholder="Detalles adicionales de la cotización"></textarea>
+                            <small class="form-text text-muted">Ingrese detalles adicionales (opcional)</small>
+                        </div>
+                        <input type="hidden" id="cotizacion_id" name="cotizacion_id" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="guardarCotizacion">Guardar</button>
+                    <button type="button" class="btn btn-success" id="actualizarCotizacion"
+                        style="display: none;">Actualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <!-- place footer here -->
     </footer>
 
     <script>
-        $(document).ready(function () {
-            const API_URL = "http://localhost:3000/api/cotizaciones/";
+        function limpiarFormulario() {
+            $("#cotizacion_id").val("");
+            $("#cliente_id").val("");
+            $("#paquete_id").val("");
+            $("#precio_final").val("");
+            $("#estado").val("");
+            $("#num_personas").val("1"); // Resetear número de personas
+            $("#detalles_adicionales").val("");
+            $("#ajuste_precio").val("");
+            $("#tipo_ajuste").val("+");
+            $("#guardarCotizacion").show();
+            $("#actualizarCotizacion").hide();
+            $("#cotizacionModalLabel").text("Nueva Cotización");
+            
+            // Limpiar resumen de precios
+            $('#precioInfo').text('Seleccione un paquete para ver el precio base');
+            $('#precioBase').text('$0.00');
+            $('#precioAjuste').text('$0.00');
+            $('#precioTotal').text('$0.00');
+            $('#numPersonas').text('1');
+            $('#subtotalBase').text('$0.00');
+            $('#totalAjuste').text('$0.00');
+            $('#precioPorPersona').text('$0.00');
+        }
 
+        // Función para obtener color del badge del estado
+        function getEstadoColor(estado) {
+            switch(estado) {
+                case 'pendiente': return 'bg-warning';
+                case 'aprobada': return 'bg-success';
+                case 'rechazada': return 'bg-danger';
+                case 'cancelada': return 'bg-secondary';
+                default: return 'bg-info';
+            }
+        }
+
+        $(document).ready(function () {
+
+            const API_URL = 'http://localhost:3000/api/cotizaciones/';
+
+            // Cargar clientes y paquetes en los dropdowns
+            function cargarClientes() {
+                $.get('http://localhost:3000/api/clientes/', function (data) {
+                    console.log("Clientes cargados:", data);
+                    $("#cliente_id").empty().append('<option value="">Seleccione un cliente</option>');
+                    data.forEach((cliente) => {
+                        $("#cliente_id").append(`<option value="${cliente._id}">${cliente.nombre} (${cliente.correo})</option>`);
+                    });
+                }).fail(function(xhr, status, error) {
+                    console.error("Error al cargar clientes:", error);
+                });
+            }
+
+            function cargarPaquetes() {
+                $.get('http://localhost:3000/api/paquetes/', function (data) {
+                    console.log("Paquetes cargados:", data);
+                    $("#paquete_id").empty().append('<option value="">Seleccione un paquete</option>');
+                    data.forEach((paquete) => {
+                        const precio = paquete.precio || 0;
+                        $("#paquete_id").append(`<option value="${paquete._id}" data-precio="${precio}">${paquete.nombre} - $${precio.toFixed(2)}</option>`);
+                    });
+                }).fail(function(xhr, status, error) {
+                    console.error("Error al cargar paquetes:", error);
+                });
+            }
+
+            // Función para calcular el precio total
+            function calcularPrecioTotal() {
+                console.log("🔢 Calculando precio total...");
+                
+                const precioBase = parseFloat($('#paquete_id option:selected').data('precio')) || 0;
+                const ajuste = parseFloat($('#ajuste_precio').val()) || 0;
+                const tipoAjuste = $('#tipo_ajuste').val();
+                const numPersonas = parseInt($('#num_personas').val()) || 1;
+                
+                console.log("📊 Datos de entrada:", {
+                    precioBase,
+                    ajuste,
+                    tipoAjuste,
+                    numPersonas
+                });
+                
+                // Calcular precio total
+                let precioTotal = precioBase * numPersonas;
+                let totalAjuste = 0;
+                
+                if (tipoAjuste === '+') {
+                    totalAjuste = ajuste * numPersonas;
+                    precioTotal += totalAjuste;
+                } else if (tipoAjuste === '-') {
+                    totalAjuste = ajuste * numPersonas;
+                    precioTotal -= totalAjuste;
+                }
+                
+                console.log("🧮 Cálculos:", {
+                    subtotalBase: precioBase * numPersonas,
+                    totalAjuste,
+                    precioTotal
+                });
+                
+                // Actualizar los campos de resumen
+                $('#precioBase').text('$' + precioBase.toFixed(2));
+                $('#numPersonas').text(numPersonas);
+                $('#subtotalBase').text('$' + (precioBase * numPersonas).toFixed(2));
+                $('#precioAjuste').text('$' + ajuste.toFixed(2));
+                $('#totalAjuste').text('$' + totalAjuste.toFixed(2));
+                $('#precioTotal').text('$' + precioTotal.toFixed(2));
+                
+                // Calcular precio por persona
+                const precioPorPersona = precioTotal / numPersonas;
+                $('#precioPorPersona').text('$' + precioPorPersona.toFixed(2));
+                
+                // Actualizar el campo de precio final
+                $('#precio_final').val(precioTotal.toFixed(2));
+                
+                console.log("✅ Precio calculado:", precioTotal);
+                return precioTotal;
+            }
+
+            // Evento cuando se selecciona un paquete
+            $('#paquete_id').change(function() {
+                console.log("📦 Paquete seleccionado:", $(this).val());
+                
+                const precioBase = parseFloat($(this).find('option:selected').data('precio')) || 0;
+                console.log("💰 Precio base del paquete:", precioBase);
+                
+                if (precioBase > 0) {
+                    $('#precioInfo').text(`Precio base del paquete: $${precioBase.toFixed(2)}`);
+                    // Forzar el cálculo después de un pequeño delay para asegurar que el DOM esté actualizado
+                    setTimeout(() => {
+                        calcularPrecioTotal();
+                    }, 100);
+                } else {
+                    $('#precioInfo').text('Seleccione un paquete para ver el precio base');
+                    $('#precioBase').text('$0.00');
+                    $('#precioAjuste').text('$0.00');
+                    $('#precioTotal').text('$0.00');
+                    $('#precioPorPersona').text('$0.00');
+                    $('#subtotalBase').text('$0.00');
+                    $('#totalAjuste').text('$0.00');
+                    $('#numPersonas').text('1');
+                    $('#precio_final').val('');
+                }
+            });
+
+            // Evento cuando se cambia el ajuste de precio o número de personas
+            $('#ajuste_precio, #tipo_ajuste, #num_personas').on('input change', function() {
+                console.log("🔄 Cambio detectado en:", this.id, "Valor:", $(this).val());
+                calcularPrecioTotal();
+            });
+
+            // Cargar datos de cotizaciones
             function cargarDatos() {
-                console.log("Cargando cotizaciones...");
+                console.log("Cargando datos de cotizaciones...");
                 $.get(API_URL, function (data) {
                     console.log("Datos recibidos:", data);
                     $("#listadatos").empty();
-
-                    if (Array.isArray(data) && data.length > 0) {
+                    if (data && data.length > 0) {
                         data.forEach((item) => {
-                            const fecha = item.fecha_cotizacion
-                                ? new Date(item.fecha_cotizacion).toLocaleDateString()
-                                : "N/A";
-
-                            const cliente = (item.cliente_id && typeof item.cliente_id === "object")
-                                ? (item.cliente_id.nombre || "Sin nombre")
-                                : (item.cliente_id || "N/A");
-
-                            const paquete = (item.paquete_id && typeof item.paquete_id === "object")
-                                ? (item.paquete_id.nombre || "Sin nombre")
-                                : (item.paquete_id || "N/A");
-
-                            $("#listadatos").append(`
-                            <tr>
-                                <td>${cliente}</td>
-                                <td>${paquete}</td>
-                                <td>$${item.precio_final || 0}</td>
-                                <td>
-                                    <span class="badge bg-${getEstadoColor(item.estado)}">
-                                        ${item.estado || "Desconocido"}
-                                    </span>
-                                </td>
+                            const fecha = new Date(item.fecha_creacion).toLocaleDateString('es-ES');
+                            const estadoColor = getEstadoColor(item.estado);
+                            
+                            // Verificar si los datos están populados
+                            const clienteNombre = item.cliente_id && typeof item.cliente_id === 'object' 
+                                ? item.cliente_id.nombre 
+                                : 'Cliente no encontrado';
+                            const paqueteNombre = item.paquete_id && typeof item.paquete_id === 'object' 
+                                ? item.paquete_id.nombre 
+                                : 'Paquete no encontrado';
+                            
+                            $("#listadatos").append(
+                                `<tr class="">
+                                <td>${clienteNombre}</td>
+                                <td>${paqueteNombre}</td>
+                                <td>${item.num_personas || 1}</td>
+                                <td><span class="badge bg-primary">$${item.precio_final || 'N/A'}</span></td>
+                                <td><span class="badge ${estadoColor}">${item.estado || 'N/A'}</span></td>
                                 <td>${item.detalles_adicionales || 'N/A'}</td>
                                 <td>${fecha}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" onclick="editarCotizacion('${item._id}')">
+                                    <button class="btn btn-primary btn-sm me-1" onclick="editarCotizacion('${item._id}')">
                                         Editar
                                     </button>
                                     <button class="btn btn-danger btn-sm" onclick="eliminarCotizacion('${item._id}')">
                                         Eliminar
                                     </button>
                                 </td>
-                            </tr>
-                        `);
+                            </tr>`);
                         });
                     } else {
-                        $("#listadatos").append(`
-                        <tr>
-                            <td colspan="7" class="text-center">
-                                No hay cotizaciones registradas
-                            </td>
-                        </tr>
-                    `);
+                        $("#listadatos").append('<tr><td colspan="7" class="text-center">No hay cotizaciones registradas</td></tr>');
                     }
-                }).fail(function (error) {
+                }).fail(function(xhr, status, error) {
                     console.error("Error al cargar datos:", error);
-                    $("#listadatos").empty().append(`
-                    <tr>
-                        <td colspan="7" class="text-center text-danger">
-                            Error al cargar las cotizaciones: ${error.statusText}
-                        </td>
-                    </tr>
-                `);
+                    $("#listadatos").append('<tr><td colspan="7" class="text-center text-danger">Error al cargar datos</td></tr>');
                 });
             }
 
-            function getEstadoColor(estado) {
-                if (!estado) return "secondary";
-                switch (estado.toLowerCase()) {
-                    case 'pendiente': return 'warning';
-                    case 'aprobada': return 'success';
-                    case 'rechazada': return 'danger';
-                    case 'cancelada': return 'secondary';
-                    default: return 'primary';
+            // Nuevo cliente
+            $('#btnNuevo').click(function() {
+                limpiarFormulario();
+                $('#cotizacionModal').modal('show');
+            });
+
+            // Guardar nueva cotización
+            $("#guardarCotizacion").click(function () {
+                const nuevaCotizacion = {
+                    cliente_id: $("#cliente_id").val(),
+                    paquete_id: $("#paquete_id").val(),
+                    precio_final: parseFloat($("#precio_final").val()),
+                    estado: $("#estado").val(),
+                    num_personas: parseInt($("#num_personas").val()),
+                    detalles_adicionales: $("#detalles_adicionales").val()
+                };
+
+                $.ajax({
+                    url: API_URL,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(nuevaCotizacion),
+                    success: function (response) {
+                        alert("Cotización guardada exitosamente");
+                        $('#cotizacionModal').modal('hide');
+                        limpiarFormulario();
+                        cargarDatos();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr.responseText);
+                        alert('Error al guardar: ' + (xhr.responseJSON?.mensaje || error));
+                    }
+                });
+            });
+
+            // Actualizar cotización
+            $("#actualizarCotizacion").click(function () {
+                const cotizacionId = $("#cotizacion_id").val();
+                if (!cotizacionId) {
+                    alert("No hay cotización seleccionada para actualizar");
+                    return;
                 }
+
+                const cotizacionActualizada = {
+                    cliente_id: $("#cliente_id").val(),
+                    paquete_id: $("#paquete_id").val(),
+                    precio_final: parseFloat($("#precio_final").val()),
+                    estado: $("#estado").val(),
+                    num_personas: parseInt($("#num_personas").val()),
+                    detalles_adicionales: $("#detalles_adicionales").val()
+                };
+
+                $.ajax({
+                    url: API_URL + cotizacionId,
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify(cotizacionActualizada),
+                    success: function (response) {
+                        alert("Cotización actualizada exitosamente");
+                        $('#cotizacionModal').modal('hide');
+                        limpiarFormulario();
+                        cargarDatos();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr.responseText);
+                        alert('Error al actualizar: ' + (xhr.responseJSON?.mensaje || error));
+                    }
+                });
+            });
+
+            // Función para editar cotización
+            window.editarCotizacion = function (id) {
+                $.get(API_URL + id, function (data) {
+                    console.log("Datos de cotización para editar:", data);
+                    
+                    $("#cotizacion_id").val(data._id);
+                    $("#cliente_id").val(data.cliente_id._id || data.cliente_id);
+                    $("#paquete_id").val(data.paquete_id._id || data.paquete_id);
+                    $("#precio_final").val(data.precio_final);
+                    $("#estado").val(data.estado);
+                    $("#num_personas").val(data.num_personas || 1); // Establecer número de personas
+                    $("#detalles_adicionales").val(data.detalles_adicionales);
+                    
+                    // Calcular ajuste de precio si existe
+                    let precioBase = 0;
+                    if (data.paquete_id && typeof data.paquete_id === 'object' && data.paquete_id.precio) {
+                        precioBase = parseFloat(data.paquete_id.precio);
+                    } else {
+                        // Si no está populado, buscar el precio del paquete seleccionado
+                        const paqueteSeleccionado = $('#paquete_id option:selected');
+                        precioBase = parseFloat(paqueteSeleccionado.data('precio')) || 0;
+                    }
+                    
+                    const precioFinal = parseFloat(data.precio_final) || 0;
+                    let ajuste = 0;
+                    let tipoAjuste = '+';
+                    
+                    if (precioBase > 0 && precioFinal !== precioBase) {
+                        ajuste = Math.abs(precioFinal - precioBase);
+                        tipoAjuste = precioFinal > precioBase ? '+' : '-';
+                    }
+                    
+                    $("#ajuste_precio").val(ajuste.toFixed(2));
+                    $("#tipo_ajuste").val(tipoAjuste);
+                    
+                    // Actualizar resumen de precios
+                    setTimeout(() => {
+                        calcularPrecioTotal();
+                    }, 100);
+                    
+                    $("#guardarCotizacion").hide();
+                    $("#actualizarCotizacion").show();
+                    $("#cotizacionModalLabel").text("Editar Cotización");
+                    
+                    $('#cotizacionModal').modal('show');
+                });
             }
 
-            // Declarar las funciones globales ANTES
-            window.editarCotizacion = function (id) {
-                console.log("Editando cotización:", id);
-                // Aquí iría la lógica de edición
-            };
-
+            // Función para eliminar cotización
             window.eliminarCotizacion = function (id) {
                 if (confirm("¿Está seguro de que desea eliminar esta cotización?")) {
                     $.ajax({
                         url: API_URL + id,
                         type: 'DELETE',
-                        success: function () {
+                        success: function (response) {
                             alert("Cotización eliminada exitosamente");
                             cargarDatos();
                         },
-                        error: function (error) {
-                            alert("Error al eliminar la cotización: " + error.statusText);
+                        error: function (xhr, status, error) {
+                            console.error("Error:", xhr.responseText);
+                            alert('Error al eliminar: ' + (xhr.responseJSON?.mensaje || error));
                         }
                     });
                 }
-            };
+            }
 
-            // Cargar datos al iniciar
+            // Limpiar formulario cuando se cierra el modal
+            $('#cotizacionModal').on('hidden.bs.modal', function () {
+                limpiarFormulario();
+            });
+
+            // Función de inicialización
+            function inicializarFormulario() {
+                console.log("🚀 Inicializando formulario de cotizaciones...");
+                
+                // Establecer valores por defecto
+                $('#num_personas').val(1);
+                $('#tipo_ajuste').val('+');
+                
+                // Limpiar resumen de precios
+                $('#precioBase').text('$0.00');
+                $('#numPersonas').text('1');
+                $('#subtotalBase').text('$0.00');
+                $('#precioAjuste').text('$0.00');
+                $('#totalAjuste').text('$0.00');
+                $('#precioTotal').text('$0.00');
+                $('#precioPorPersona').text('$0.00');
+                
+                console.log("✅ Formulario inicializado correctamente");
+            }
+
+            // Inicializar
+            inicializarFormulario();
+            cargarClientes();
+            cargarPaquetes();
             cargarDatos();
         });
     </script>
 
 
+    <!-- Bootstrap JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
         crossorigin="anonymous"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
         integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>

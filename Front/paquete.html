@@ -196,11 +196,6 @@
                     </div>
 
                     <div class="mb-3">
-                        <label>Imagen URL</label>
-                        <input type="text" id="imagen_url" class="form-control">
-                    </div>
-
-                    <div class="mb-3">
                         <label>Activo</label>
                         <select id="activo" class="form-select">
                             <option value="true">Sí</option>
@@ -277,7 +272,6 @@
                     incluye: $("#incluye").val().split(",").map(i => i.trim()).filter(i => i),
                     temporada: $("#temporada").val(),
                     personalizable: $("#personalizable").val() === "true",
-                    imagen_url: $("#imagen_url").val(),
                     cupo_disponible: parseInt($("#cupo_disponible").val()),
                     activo: $("#activo").val() === "true"
                 };
@@ -319,7 +313,6 @@
                     $("#incluye").val(p.incluye?.join(", "));
                     $("#temporada").val(p.temporada);
                     $("#personalizable").val(p.personalizable ? "true" : "false");
-                    $("#imagen_url").val(p.imagen_url);
                     $("#cupo_disponible").val(p.cupo_disponible);
                     $("#activo").val(p.activo ? "true" : "false");
                     $("#modalPaqueteLabel").text("Editar Paquete");

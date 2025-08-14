@@ -55,59 +55,12 @@
     </header>
     <div class="container">
         <h1>Gestión de Cotizaciones</h1>
-
-        <div class="container">
-
-            <div class="mb-3">
-                <label for="cliente_id" class="form-label">Cliente ID</label>
-                <input type="text" class="form-control" name="cliente_id" id="cliente_id" aria-describedby="helpId"
-                    placeholder="ID del cliente" />
-                <small id="helpId" class="form-text text-muted">Ingrese el ID del cliente</small>
-            </div>
-            <div class="mb-3">
-                <label for="paquete_id" class="form-label">Paquete ID</label>
-                <input type="text" class="form-control" name="paquete_id" id="paquete_id" aria-describedby="helpId"
-                    placeholder="ID del paquete" />
-                <small id="helpId" class="form-text text-muted">Ingrese el ID del paquete</small>
-            </div>
-            <div class="mb-3">
-                <label for="precio_final" class="form-label">Precio Final</label>
-                <input type="number" class="form-control" name="precio_final" id="precio_final" aria-describedby="helpId"
-                    placeholder="Precio final" />
-                <small id="helpId" class="form-text text-muted">Ingrese el precio final</small>
-            </div>
-            <div class="mb-3">
-                <label for="estado" class="form-label">Estado</label>
-                <select class="form-select" name="estado" id="estado" aria-describedby="helpId">
-                    <option value="pendiente">Pendiente</option>
-                    <option value="aprobada">Aprobada</option>
-                    <option value="rechazada">Rechazada</option>
-                    <option value="cancelada">Cancelada</option>
-                </select>
-                <small id="helpId" class="form-text text-muted">Seleccione el estado de la cotización</small>
-            </div>
-            <div class="mb-3">
-                <label for="detalles_adicionales" class="form-label">Detalles Adicionales</label>
-                <textarea class="form-control" name="detalles_adicionales" id="detalles_adicionales" rows="3"
-                    placeholder="Detalles adicionales"></textarea>
-                <small id="helpId" class="form-text text-muted">Ingrese detalles adicionales</small>
-            </div>
-            <div class="mb-3">
-                <label for="cotizacion_id" class="form-label">ID Cotización</label>
-                <input type="text" class="form-control" name="cotizacion_id" id="cotizacion_id" aria-describedby="helpId"
-                    placeholder="" readonly />
-                <small id="helpId" class="form-text text-muted">ID de la cotización (se genera automáticamente)</small>
-            </div>
-            <div class="mb-3">
-                <a name="guardardatos" id="guardardatos" class="btn btn-primary" role="button">Guardar</a>
-
-                <a name="actualizardatos" id="actualizardatos" class="btn btn-success" style="display: none;"
-                    role="button">Actualizar</a>
-
-                <input onclick="limpiarFormulario()" class="btn btn-danger" type="button" value="Limpiar" />
-
-            </div>
-
+        
+        <!-- Botón para abrir modal -->
+        <div class="mb-3">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cotizacionModal">
+                <i class="bi bi-plus-circle"></i> Nueva Cotización
+            </button>
         </div>
 
         <div class="table-responsive">
@@ -130,6 +83,81 @@
         </div>
 
     </div>
+
+    <!-- Modal para Cotización -->
+    <div class="modal fade" id="cotizacionModal" tabindex="-1" aria-labelledby="cotizacionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cotizacionModalLabel">Nueva Cotización</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cotizacionForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="cliente_id" class="form-label">Cliente</label>
+                                    <select class="form-select" name="cliente_id" id="cliente_id" required>
+                                        <option value="">Seleccione un cliente</option>
+                                    </select>
+                                    <small class="form-text text-muted">Seleccione el cliente</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="paquete_id" class="form-label">Paquete</label>
+                                    <select class="form-select" name="paquete_id" id="paquete_id" required>
+                                        <option value="">Seleccione un paquete</option>
+                                    </select>
+                                    <small class="form-text text-muted">Seleccione el paquete</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="precio_final" class="form-label">Precio Final</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" name="precio_final" id="precio_final" 
+                                            placeholder="0.00" min="0" step="0.01" required />
+                                    </div>
+                                    <small class="form-text text-muted">Ingrese el precio final</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="estado" class="form-label">Estado</label>
+                                    <select class="form-select" name="estado" id="estado" required>
+                                        <option value="">Seleccione estado</option>
+                                        <option value="pendiente">⏳ Pendiente</option>
+                                        <option value="aprobada">✅ Aprobada</option>
+                                        <option value="rechazada">❌ Rechazada</option>
+                                        <option value="cancelada">🚫 Cancelada</option>
+                                    </select>
+                                    <small class="form-text text-muted">Seleccione el estado</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="detalles_adicionales" class="form-label">Detalles Adicionales</label>
+                            <textarea class="form-control" name="detalles_adicionales" id="detalles_adicionales" 
+                                rows="3" placeholder="Detalles adicionales de la cotización"></textarea>
+                            <small class="form-text text-muted">Ingrese detalles adicionales (opcional)</small>
+                        </div>
+                        <input type="hidden" id="cotizacion_id" name="cotizacion_id" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="guardarCotizacion">Guardar</button>
+                    <button type="button" class="btn btn-success" id="actualizarCotizacion" style="display: none;">Actualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <!-- place footer here -->
     </footer>
@@ -141,74 +169,103 @@
             $("#cliente_id").val("");
             $("#paquete_id").val("");
             $("#precio_final").val("");
-            $("#estado").val("pendiente");
+            $("#estado").val("");
             $("#detalles_adicionales").val("");
-            $("#guardardatos").show();
-            $("#actualizardatos").hide();
+            $("#guardarCotizacion").show();
+            $("#actualizarCotizacion").hide();
+            $("#cotizacionModalLabel").text("Nueva Cotización");
+        }
+
+        // Función para obtener icono del estado
+        function getEstadoIcon(estado) {
+            switch(estado) {
+                case 'pendiente': return '⏳';
+                case 'aprobada': return '✅';
+                case 'rechazada': return '❌';
+                case 'cancelada': return '🚫';
+                default: return '❓';
+            }
+        }
+
+        // Función para obtener color del badge del estado
+        function getEstadoColor(estado) {
+            switch(estado) {
+                case 'pendiente': return 'bg-warning';
+                case 'aprobada': return 'bg-success';
+                case 'rechazada': return 'bg-danger';
+                case 'cancelada': return 'bg-secondary';
+                default: return 'bg-info';
+            }
         }
 
         $(document).ready(function () {
 
             const API_URL = 'http://localhost:3000/api/cotizaciones/';
 
-            //Funciones
-
-            function cargarDatos() {
-                $.get(API_URL, function (data) {
-                    console.log(data);
-                    $("#listadatos").empty();
-                    data.forEach((item) => {
-                        const fecha = new Date(item.fecha_cotizacion).toLocaleDateString();
-                        $("#listadatos").append(
-                            `<tr class="">
-                            <td scope="row">${item._id}</td>
-                            <td>${item.cliente_id ? item.cliente_id.nombre || item.cliente_id : 'N/A'}</td>
-                            <td>${item.paquete_id ? item.paquete_id.nombre || item.paquete_id : 'N/A'}</td>
-                            <td>$${item.precio_final}</td>
-                            <td><span class="badge bg-${getEstadoColor(item.estado)}">${item.estado}</span></td>
-                            <td>${fecha}</td>
-                            <td>
-                                <a
-                                    name=""
-                                    id=""
-                                    class="btn btn-primary btn-sm"
-                                    onclick="editarDatos('${item._id}','${item.cliente_id}','${item.paquete_id}','${item.precio_final}','${item.estado}','${item.detalles_adicionales || ''}')"
-                                    role="button"
-                                    >Editar</a
-                                >
-                                
-                                <a
-                                    name=""
-                                    id=""
-                                    class="btn btn-danger btn-sm"
-                                    onclick="eliminarDatos('${item._id}')"
-                                    role="button"
-                                    >Eliminar</a
-                                >
-
-                            </td>
-                        </tr>`);
+            // Cargar clientes y paquetes en los dropdowns
+            function cargarClientes() {
+                $.get('http://localhost:3000/api/clientes/', function (data) {
+                    $("#cliente_id").empty().append('<option value="">Seleccione un cliente</option>');
+                    data.forEach((cliente) => {
+                        $("#cliente_id").append(`<option value="${cliente._id}">${cliente.nombre} (${cliente.correo})</option>`);
                     });
                 });
             }
 
-            function getEstadoColor(estado) {
-                switch(estado) {
-                    case 'pendiente': return 'warning';
-                    case 'aprobada': return 'success';
-                    case 'rechazada': return 'danger';
-                    case 'cancelada': return 'secondary';
-                    default: return 'primary';
-                }
+            function cargarPaquetes() {
+                $.get('http://localhost:3000/api/paquetes/', function (data) {
+                    $("#paquete_id").empty().append('<option value="">Seleccione un paquete</option>');
+                    data.forEach((paquete) => {
+                        $("#paquete_id").append(`<option value="${paquete._id}">${paquete.nombre} - $${paquete.precio}</option>`);
+                    });
+                });
             }
 
-            //guardardatos
-            $("#guardardatos").click(function (e) {
+            // Cargar datos de cotizaciones
+            function cargarDatos() {
+                console.log("Cargando datos de cotizaciones...");
+                $.get(API_URL, function (data) {
+                    console.log("Datos recibidos:", data);
+                    $("#listadatos").empty();
+                    if (data && data.length > 0) {
+                        data.forEach((item) => {
+                            const fecha = new Date(item.fecha_creacion).toLocaleDateString('es-ES');
+                            const estadoIcon = getEstadoIcon(item.estado);
+                            const estadoColor = getEstadoColor(item.estado);
+                            
+                            $("#listadatos").append(
+                                `<tr class="">
+                                <td scope="row">${item._id}</td>
+                                <td>${item.cliente ? item.cliente.nombre : 'N/A'}</td>
+                                <td>${item.paquete ? item.paquete.nombre : 'N/A'}</td>
+                                <td><span class="badge bg-primary">$${item.precio_final || 'N/A'}</span></td>
+                                <td><span class="badge ${estadoColor}">${estadoIcon} ${item.estado || 'N/A'}</span></td>
+                                <td>${fecha}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" onclick="editarCotizacion('${item._id}')">
+                                        ✏️ Editar
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="eliminarCotizacion('${item._id}')">
+                                        🗑️ Eliminar
+                                    </button>
+                                </td>
+                            </tr>`);
+                        });
+                    } else {
+                        $("#listadatos").append('<tr><td colspan="7" class="text-center">No hay cotizaciones registradas</td></tr>');
+                    }
+                }).fail(function(xhr, status, error) {
+                    console.error("Error al cargar datos:", error);
+                    $("#listadatos").append('<tr><td colspan="7" class="text-center text-danger">Error al cargar datos</td></tr>');
+                });
+            }
 
-                const nuevoDato = {
+            // Guardar nueva cotización
+            $("#guardarCotizacion").click(function () {
+                const nuevaCotizacion = {
                     cliente_id: $("#cliente_id").val(),
                     paquete_id: $("#paquete_id").val(),
-                    precio_final: $("#precio_final").val(),
+                    precio_final: parseFloat($("#precio_final").val()),
                     estado: $("#estado").val(),
                     detalles_adicionales: $("#detalles_adicionales").val()
                 };
@@ -217,26 +274,32 @@
                     url: API_URL,
                     type: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify(nuevoDato),
-                    success: function () {
-                        alert("Cotización creada exitosamente");
+                    data: JSON.stringify(nuevaCotizacion),
+                    success: function (response) {
+                        alert("Cotización guardada exitosamente");
+                        $('#cotizacionModal').modal('hide');
                         limpiarFormulario();
                         cargarDatos();
                     },
-                    error: function (err) {
-                        alert('Error al crear cotización: ' + err.responseJSON?.mensaje || err.statusText);
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr.responseText);
+                        alert('Error al guardar: ' + (xhr.responseJSON?.mensaje || error));
                     }
                 });
             });
 
-            //actualizardatos
-            $("#actualizardatos").click(function (e) {
+            // Actualizar cotización
+            $("#actualizarCotizacion").click(function () {
                 const cotizacionId = $("#cotizacion_id").val();
-                
-                const datosActualizados = {
+                if (!cotizacionId) {
+                    alert("No hay cotización seleccionada para actualizar");
+                    return;
+                }
+
+                const cotizacionActualizada = {
                     cliente_id: $("#cliente_id").val(),
                     paquete_id: $("#paquete_id").val(),
-                    precio_final: $("#precio_final").val(),
+                    precio_final: parseFloat($("#precio_final").val()),
                     estado: $("#estado").val(),
                     detalles_adicionales: $("#detalles_adicionales").val()
                 };
@@ -245,60 +308,73 @@
                     url: API_URL + cotizacionId,
                     type: 'PUT',
                     contentType: 'application/json',
-                    data: JSON.stringify(datosActualizados),
-                    success: function () {
+                    data: JSON.stringify(cotizacionActualizada),
+                    success: function (response) {
                         alert("Cotización actualizada exitosamente");
+                        $('#cotizacionModal').modal('hide');
                         limpiarFormulario();
                         cargarDatos();
                     },
-                    error: function (err) {
-                        alert('Error al actualizar cotización: ' + err.responseJSON?.mensaje || err.statusText);
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr.responseText);
+                        alert('Error al actualizar: ' + (xhr.responseJSON?.mensaje || error));
                     }
                 });
             });
 
-            //Fin de funciones y eventos    
-
-            cargarDatos();
-
-        });
-
-        window.editarDatos = function (id, cliente_id, paquete_id, precio_final, estado, detalles_adicionales) {
-            $("#cotizacion_id").val(id);
-            $("#cliente_id").val(cliente_id);
-            $("#paquete_id").val(paquete_id);
-            $("#precio_final").val(precio_final);
-            $("#estado").val(estado);
-            $("#detalles_adicionales").val(detalles_adicionales);
-            $("#guardardatos").hide();
-            $("#actualizardatos").show();
-        }
-
-        window.eliminarDatos = function (id) {
-            if (confirm("¿Está seguro de que desea eliminar esta cotización?")) {
-                $.ajax({
-                    url: 'http://localhost:3000/api/cotizaciones/' + id,
-                    type: 'DELETE',
-                    success: function () {
-                        alert("Cotización eliminada exitosamente");
-                        cargarDatos();
-                    },
-                    error: function (err) {
-                        alert('Error al eliminar cotización: ' + err.responseJSON?.mensaje || err.statusText);
-                    }
+            // Función para editar cotización
+            window.editarCotizacion = function (id) {
+                $.get(API_URL + id, function (data) {
+                    $("#cotizacion_id").val(data._id);
+                    $("#cliente_id").val(data.cliente_id);
+                    $("#paquete_id").val(data.paquete_id);
+                    $("#precio_final").val(data.precio_final);
+                    $("#estado").val(data.estado);
+                    $("#detalles_adicionales").val(data.detalles_adicionales);
+                    
+                    $("#guardarCotizacion").hide();
+                    $("#actualizarCotizacion").show();
+                    $("#cotizacionModalLabel").text("Editar Cotización");
+                    
+                    $('#cotizacionModal').modal('show');
                 });
             }
-        }
 
+            // Función para eliminar cotización
+            window.eliminarCotizacion = function (id) {
+                if (confirm("¿Está seguro de que desea eliminar esta cotización?")) {
+                    $.ajax({
+                        url: API_URL + id,
+                        type: 'DELETE',
+                        success: function (response) {
+                            alert("Cotización eliminada exitosamente");
+                            cargarDatos();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error:", xhr.responseText);
+                            alert('Error al eliminar: ' + (xhr.responseJSON?.mensaje || error));
+                        }
+                    });
+                }
+            }
+
+            // Limpiar formulario cuando se cierra el modal
+            $('#cotizacionModal').on('hidden.bs.modal', function () {
+                limpiarFormulario();
+            });
+
+            // Inicializar
+            cargarClientes();
+            cargarPaquetes();
+            cargarDatos();
+        });
     </script>
 
+    <!-- Bootstrap JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-        crossorigin="anonymous"></script>
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
 </body>
 
 </html>

@@ -80,28 +80,33 @@
                 <label for="clima" class="form-label">Clima Preferido</label>
                 <select class="form-select" name="clima" id="clima" aria-describedby="helpId">
                     <option value="">Seleccione clima preferido</option>
-                    <option value="tropical">Tropical</option>
-                    <option value="templado">Templado</option>
-                    <option value="frio">Frío</option>
-                    <option value="cualquiera">Cualquiera</option>
+                    <option value="tropical">🌴 Tropical</option>
+                    <option value="templado">🍃 Templado</option>
+                    <option value="frio">❄️ Frío</option>
+                    <option value="cualquiera">🌍 Cualquiera</option>
                 </select>
                 <small id="helpId" class="form-text text-muted">Seleccione el clima preferido</small>
             </div>
             <div class="mb-3">
                 <label for="presupuesto_max" class="form-label">Presupuesto Máximo</label>
-                <input type="number" class="form-control" name="presupuesto_max" id="presupuesto_max" aria-describedby="helpId"
-                    placeholder="2000" />
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" name="presupuesto_max" id="presupuesto_max" 
+                        aria-describedby="helpId" placeholder="2000" min="0" step="100" />
+                </div>
                 <small id="helpId" class="form-text text-muted">Ingrese el presupuesto máximo en dólares</small>
             </div>
             <div class="mb-3">
                 <label for="tipo_viaje" class="form-label">Tipo de Viaje</label>
                 <select class="form-select" name="tipo_viaje" id="tipo_viaje" aria-describedby="helpId">
                     <option value="">Seleccione tipo de viaje</option>
-                    <option value="aventura">Aventura</option>
-                    <option value="relax">Relax</option>
-                    <option value="cultural">Cultural</option>
-                    <option value="romantico">Romántico</option>
-                    <option value="familiar">Familiar</option>
+                    <option value="aventura">🏔️ Aventura</option>
+                    <option value="relax">🏖️ Relax</option>
+                    <option value="cultural">🏛️ Cultural</option>
+                    <option value="romantico">💕 Romántico</option>
+                    <option value="familiar">👨‍👩‍👧‍👦 Familiar</option>
+                    <option value="negocios">💼 Negocios</option>
+                    <option value="gastronomico">🍽️ Gastronómico</option>
                 </select>
                 <small id="helpId" class="form-text text-muted">Seleccione el tipo de viaje preferido</small>
             </div>
@@ -162,6 +167,37 @@
             $("#actualizardatos").hide();
         }
 
+        // Funciones para iconos y colores
+        function getClimaIcon(clima) {
+            switch(clima) {
+                case 'tropical': return '🌴';
+                case 'templado': return '🍃';
+                case 'frio': return '❄️';
+                case 'cualquiera': return '🌍';
+                default: return '🌤️';
+            }
+        }
+
+        function getTipoViajeIcon(tipo) {
+            switch(tipo) {
+                case 'aventura': return '🏔️';
+                case 'relax': return '🏖️';
+                case 'cultural': return '🏛️';
+                case 'romantico': return '💕';
+                case 'familiar': return '👨‍👩‍👧‍👦';
+                case 'negocios': return '💼';
+                case 'gastronomico': return '🍽️';
+                default: return '✈️';
+            }
+        }
+
+        function getPresupuestoColor(presupuesto) {
+            if (!presupuesto) return 'bg-secondary';
+            if (presupuesto < 1000) return 'bg-success';
+            if (presupuesto < 3000) return 'bg-warning';
+            return 'bg-danger';
+        }
+
         $(document).ready(function () {
 
             const API_URL = 'http://localhost:3000/api/clientes/';
@@ -176,15 +212,19 @@
                     if (data && data.length > 0) {
                         data.forEach((item) => {
                             const preferencias = item.preferencias || {};
+                            const climaIcon = getClimaIcon(preferencias.clima);
+                            const tipoViajeIcon = getTipoViajeIcon(preferencias.tipo_viaje);
+                            const presupuestoColor = getPresupuestoColor(preferencias.presupuesto_max);
+                            
                             $("#listadatos").append(
                                 `<tr class="">
                                 <td scope="row">${item._id}</td>
                                 <td>${item.nombre || 'N/A'}</td>
                                 <td>${item.correo || 'N/A'}</td>
                                 <td>${item.telefono || 'N/A'}</td>
-                                <td>${preferencias.clima || 'N/A'}</td>
-                                <td>$${preferencias.presupuesto_max || 'N/A'}</td>
-                                <td>${preferencias.tipo_viaje || 'N/A'}</td>
+                                <td>${climaIcon} ${preferencias.clima || 'N/A'}</td>
+                                <td><span class="badge ${presupuestoColor}">$${preferencias.presupuesto_max || 'N/A'}</span></td>
+                                <td>${tipoViajeIcon} ${preferencias.tipo_viaje || 'N/A'}</td>
                                 <td>
                                     <a
                                         name=""
@@ -199,11 +239,10 @@
                                         name=""
                                         id=""
                                         class="btn btn-danger btn-sm"
-                                        onclick="eliminarDatos('${item._id}')"
+                                        onclick="eliminarCliente('${item._id}')"
                                         role="button"
                                         >Eliminar</a
                                     >
-
                                 </td>
                             </tr>`);
                         });
@@ -211,22 +250,20 @@
                         $("#listadatos").append('<tr><td colspan="8" class="text-center">No hay clientes registrados</td></tr>');
                     }
                 }).fail(function(xhr, status, error) {
-                    console.error("Error al cargar datos:", xhr, status, error);
-                    $("#listadatos").empty();
-                    $("#listadatos").append(`<tr><td colspan="8" class="text-center text-danger">Error al cargar datos: ${error}</td></tr>`);
+                    console.error("Error al cargar datos:", error);
+                    $("#listadatos").append('<tr><td colspan="8" class="text-center text-danger">Error al cargar datos</td></tr>');
                 });
             }
 
             //guardardatos
             $("#guardardatos").click(function (e) {
-
-                const nuevoDato = {
+                const nuevoCliente = {
                     nombre: $("#nombre").val(),
                     correo: $("#correo").val(),
                     telefono: $("#telefono").val(),
                     preferencias: {
                         clima: $("#clima").val(),
-                        presupuesto_max: $("#presupuesto_max").val(),
+                        presupuesto_max: $("#presupuesto_max").val() ? parseInt($("#presupuesto_max").val()) : 0,
                         tipo_viaje: $("#tipo_viaje").val()
                     }
                 };
@@ -235,29 +272,47 @@
                     url: API_URL,
                     type: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify(nuevoDato),
-                    success: function () {
-                        alert("Cliente creado exitosamente");
+                    data: JSON.stringify(nuevoCliente),
+                    success: function (response) {
+                        alert("Cliente guardado exitosamente");
                         limpiarFormulario();
                         cargarDatos();
                     },
-                    error: function (err) {
-                        alert('Error al crear cliente: ' + err.responseJSON?.mensaje || err.statusText);
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr.responseText);
+                        alert('Error al guardar: ' + (xhr.responseJSON?.mensaje || error));
                     }
                 });
             });
 
             //actualizardatos
-            $("#actualizardatos").click(function (e) {
+            window.editarDatos = function (id, nombre, correo, telefono, clima, presupuesto, tipo_viaje) {
+                $("#cliente_id").val(id);
+                $("#nombre").val(nombre);
+                $("#correo").val(correo);
+                $("#telefono").val(telefono);
+                $("#clima").val(clima);
+                $("#presupuesto_max").val(presupuesto);
+                $("#tipo_viaje").val(tipo_viaje);
+                $("#guardardatos").hide();
+                $("#actualizardatos").show();
+            }
+
+            // Función para actualizar cliente
+            $("#actualizardatos").click(function () {
                 const clienteId = $("#cliente_id").val();
-                
-                const datosActualizados = {
+                if (!clienteId) {
+                    alert("No hay cliente seleccionado para actualizar");
+                    return;
+                }
+
+                const clienteActualizado = {
                     nombre: $("#nombre").val(),
                     correo: $("#correo").val(),
                     telefono: $("#telefono").val(),
                     preferencias: {
                         clima: $("#clima").val(),
-                        presupuesto_max: $("#presupuesto_max").val(),
+                        presupuesto_max: $("#presupuesto_max").val() ? parseInt($("#presupuesto_max").val()) : 0,
                         tipo_viaje: $("#tipo_viaje").val()
                     }
                 };
@@ -266,61 +321,47 @@
                     url: API_URL + clienteId,
                     type: 'PUT',
                     contentType: 'application/json',
-                    data: JSON.stringify(datosActualizados),
-                    success: function () {
+                    data: JSON.stringify(clienteActualizado),
+                    success: function (response) {
                         alert("Cliente actualizado exitosamente");
                         limpiarFormulario();
                         cargarDatos();
                     },
-                    error: function (err) {
-                        alert('Error al actualizar cliente: ' + err.responseJSON?.mensaje || err.statusText);
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr.responseText);
+                        alert('Error al actualizar: ' + (xhr.responseJSON?.mensaje || error));
                     }
                 });
             });
 
-            //Fin de funciones y eventos    
-
-            cargarDatos();
-
-        });
-
-        window.editarDatos = function (id, nombre, correo, telefono, clima, presupuesto_max, tipo_viaje) {
-            $("#cliente_id").val(id);
-            $("#nombre").val(nombre);
-            $("#correo").val(correo);
-            $("#telefono").val(telefono);
-            $("#clima").val(clima);
-            $("#presupuesto_max").val(presupuesto_max);
-            $("#tipo_viaje").val(tipo_viaje);
-            $("#guardardatos").hide();
-            $("#actualizardatos").show();
-        }
-
-        window.eliminarDatos = function (id) {
-            if (confirm("¿Está seguro de que desea eliminar este cliente?")) {
-                $.ajax({
-                    url: 'http://localhost:3000/api/clientes/' + id,
-                    type: 'DELETE',
-                    success: function () {
-                        alert("Cliente eliminado exitosamente");
-                        cargarDatos();
-                    },
-                    error: function (err) {
-                        alert('Error al eliminar cliente: ' + err.responseJSON?.mensaje || err.statusText);
-                    }
-                });
+            // Función para eliminar cliente
+            window.eliminarCliente = function (id) {
+                if (confirm("¿Está seguro de que desea eliminar este cliente?")) {
+                    $.ajax({
+                        url: API_URL + id,
+                        type: 'DELETE',
+                        success: function (response) {
+                            alert("Cliente eliminado exitosamente");
+                            cargarDatos();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error:", xhr.responseText);
+                            alert('Error al eliminar: ' + (xhr.responseJSON?.mensaje || error));
+                        }
+                    });
+                }
             }
-        }
 
+            //Fin de funciones y eventos
+            cargarDatos();
+        });
     </script>
 
+    <!-- Bootstrap JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-        crossorigin="anonymous"></script>
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
 </body>
 
 </html>

@@ -11,6 +11,12 @@ const CotizacionSchema = new mongoose.Schema({
     ref: "Paquete",
     required: true,
   },
+  num_personas: {
+    type: Number,
+    required: true,
+    min: 1,
+    default: 1,
+  },
   precio_final: {
     type: Number,
     required: true,
