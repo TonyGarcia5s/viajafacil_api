@@ -80,33 +80,28 @@
                 <label for="clima" class="form-label">Clima Preferido</label>
                 <select class="form-select" name="clima" id="clima" aria-describedby="helpId">
                     <option value="">Seleccione clima preferido</option>
-                    <option value="tropical">🌴 Tropical</option>
-                    <option value="templado">🍃 Templado</option>
-                    <option value="frio">❄️ Frío</option>
-                    <option value="cualquiera">🌍 Cualquiera</option>
+                    <option value="tropical">Tropical</option>
+                    <option value="templado">Templado</option>
+                    <option value="frio">Frío</option>
+                    <option value="cualquiera">Cualquiera</option>
                 </select>
-                <small id="helpId" class="form-text text-muted">Seleccione el clima preferido para el viaje</small>
+                <small id="helpId" class="form-text text-muted">Seleccione el clima preferido</small>
             </div>
             <div class="mb-3">
                 <label for="presupuesto_max" class="form-label">Presupuesto Máximo</label>
-                <div class="input-group">
-                    <span class="input-group-text">$</span>
-                    <input type="number" class="form-control" name="presupuesto_max" id="presupuesto_max" 
-                        aria-describedby="helpId" placeholder="2000" min="0" step="100" />
-                </div>
+                <input type="number" class="form-control" name="presupuesto_max" id="presupuesto_max" aria-describedby="helpId"
+                    placeholder="2000" />
                 <small id="helpId" class="form-text text-muted">Ingrese el presupuesto máximo en dólares</small>
             </div>
             <div class="mb-3">
                 <label for="tipo_viaje" class="form-label">Tipo de Viaje</label>
                 <select class="form-select" name="tipo_viaje" id="tipo_viaje" aria-describedby="helpId">
                     <option value="">Seleccione tipo de viaje</option>
-                    <option value="aventura">🏔️ Aventura</option>
-                    <option value="relax">🏖️ Relax</option>
-                    <option value="cultural">🏛️ Cultural</option>
-                    <option value="romantico">💕 Romántico</option>
-                    <option value="familiar">👨‍👩‍👧‍👦 Familiar</option>
-                    <option value="negocios">💼 Negocios</option>
-                    <option value="gastronomico">🍽️ Gastronómico</option>
+                    <option value="aventura">Aventura</option>
+                    <option value="relax">Relax</option>
+                    <option value="cultural">Cultural</option>
+                    <option value="romantico">Romántico</option>
+                    <option value="familiar">Familiar</option>
                 </select>
                 <small id="helpId" class="form-text text-muted">Seleccione el tipo de viaje preferido</small>
             </div>
@@ -174,46 +169,51 @@
             //Funciones
 
             function cargarDatos() {
+                console.log("Cargando datos de clientes...");
                 $.get(API_URL, function (data) {
-                    console.log(data);
+                    console.log("Datos recibidos:", data);
                     $("#listadatos").empty();
-                    data.forEach((item) => {
-                        const preferencias = item.preferencias || {};
-                        const climaIcon = getClimaIcon(preferencias.clima);
-                        const tipoViajeIcon = getTipoViajeIcon(preferencias.tipo_viaje);
-                        const presupuestoColor = getPresupuestoColor(preferencias.presupuesto_max);
-                        
-                        $("#listadatos").append(
-                            `<tr class="">
-                            <td scope="row">${item._id}</td>
-                            <td>${item.nombre || 'N/A'}</td>
-                            <td>${item.correo || 'N/A'}</td>
-                            <td>${item.telefono || 'N/A'}</td>
-                            <td>${climaIcon} ${preferencias.clima || 'N/A'}</td>
-                            <td><span class="badge ${presupuestoColor}">$${preferencias.presupuesto_max || 'N/A'}</span></td>
-                            <td>${tipoViajeIcon} ${preferencias.tipo_viaje || 'N/A'}</td>
-                            <td>
-                                <a
-                                    name=""
-                                    id=""
-                                    class="btn btn-primary btn-sm"
-                                    onclick="editarDatos('${item._id}','${item.nombre || ''}','${item.correo || ''}','${item.telefono || ''}','${preferencias.clima || ''}','${preferencias.presupuesto_max || ''}','${preferencias.tipo_viaje || ''}')"
-                                    role="button"
-                                    >Editar</a
-                                >
-                                
-                                <a
-                                    name=""
-                                    id=""
-                                    class="btn btn-danger btn-sm"
-                                    onclick="eliminarDatos('${item._id}')"
-                                    role="button"
-                                    >Eliminar</a
-                                >
+                    if (data && data.length > 0) {
+                        data.forEach((item) => {
+                            const preferencias = item.preferencias || {};
+                            $("#listadatos").append(
+                                `<tr class="">
+                                <td scope="row">${item._id}</td>
+                                <td>${item.nombre || 'N/A'}</td>
+                                <td>${item.correo || 'N/A'}</td>
+                                <td>${item.telefono || 'N/A'}</td>
+                                <td>${preferencias.clima || 'N/A'}</td>
+                                <td>$${preferencias.presupuesto_max || 'N/A'}</td>
+                                <td>${preferencias.tipo_viaje || 'N/A'}</td>
+                                <td>
+                                    <a
+                                        name=""
+                                        id=""
+                                        class="btn btn-primary btn-sm"
+                                        onclick="editarDatos('${item._id}','${item.nombre || ''}','${item.correo || ''}','${item.telefono || ''}','${preferencias.clima || ''}','${preferencias.presupuesto_max || ''}','${preferencias.tipo_viaje || ''}')"
+                                        role="button"
+                                        >Editar</a
+                                    >
+                                    
+                                    <a
+                                        name=""
+                                        id=""
+                                        class="btn btn-danger btn-sm"
+                                        onclick="eliminarDatos('${item._id}')"
+                                        role="button"
+                                        >Eliminar</a
+                                    >
 
-                            </td>
-                        </tr>`);
-                    });
+                                </td>
+                            </tr>`);
+                        });
+                    } else {
+                        $("#listadatos").append('<tr><td colspan="8" class="text-center">No hay clientes registrados</td></tr>');
+                    }
+                }).fail(function(xhr, status, error) {
+                    console.error("Error al cargar datos:", xhr, status, error);
+                    $("#listadatos").empty();
+                    $("#listadatos").append(`<tr><td colspan="8" class="text-center text-danger">Error al cargar datos: ${error}</td></tr>`);
                 });
             }
 
@@ -310,39 +310,6 @@
                     }
                 });
             }
-        }
-
-        // Función para obtener el icono del clima
-        function getClimaIcon(clima) {
-            switch(clima) {
-                case 'tropical': return '🌴';
-                case 'templado': return '🍃';
-                case 'frio': return '❄️';
-                case 'cualquiera': return '🌍';
-                default: return '🌤️';
-            }
-        }
-
-        // Función para obtener el icono del tipo de viaje
-        function getTipoViajeIcon(tipo) {
-            switch(tipo) {
-                case 'aventura': return '🏔️';
-                case 'relax': return '🏖️';
-                case 'cultural': return '🏛️';
-                case 'romantico': return '💕';
-                case 'familiar': return '👨‍👩‍👧‍👦';
-                case 'negocios': return '💼';
-                case 'gastronomico': return '🍽️';
-                default: return '✈️';
-            }
-        }
-
-        // Función para obtener el color del badge según el presupuesto
-        function getPresupuestoColor(presupuesto) {
-            if (!presupuesto) return 'bg-secondary';
-            if (presupuesto < 1000) return 'bg-success';
-            if (presupuesto < 3000) return 'bg-warning';
-            return 'bg-danger';
         }
 
     </script>
