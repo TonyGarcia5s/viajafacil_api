@@ -1,117 +1,69 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const Pago = require("../models/pagos");
+const Pago = require('../models/pagos');
 
-// Crear nuevo pago
-router.post("/", async (req, res) => {
+//Obtener todos los pagos
+router.get('/', async (req, res) => {
   try {
-    // Validar método de pago
-    const metodosValidos = ["tarjeta", "transferencia", "efectivo"];
-    if (!metodosValidos.includes(req.body.metodo)) {
-      return res.status(400).json({ error: "Método de pago inválido" });
-    }
-
-    const nuevoPago = new Pago({
-      cliente_id: req.body.cliente_id,
-      monto: req.body.monto,
-      metodo: req.body.metodo,
-      estado: req.body.estado || "pendiente"
-    });
-    
-    const pagoGuardado = await nuevoPago.save();
-    res.status(201).json(pagoGuardado);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// Obtener todos los pagos
-router.get("/", async (req, res) => {
-  try {
-    const pagos = await Pago.find();
+    const pagos = await Pago.find().populate('cliente_id', 'nombre email');
     res.json(pagos);
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener pagos" });
+    res.status(500).json({ message: error.message });
   }
 });
 
-// Obtener pagos por cliente
-router.get("/cliente/:clienteId", async (req, res) => {
+//Obtener un pago por ID
+router.get('/:id', async (req, res) => {
   try {
-    const pagos = await Pago.find({ cliente_id: req.params.clienteId });
-    res.json(pagos);
+    const pago = await Pago.findById(req.params.id).populate('cliente_id', 'nombre email');
+    if (!pago) return res.status(404).json({ message: 'Pago no encontrado' });
+    res.json(pago);
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener pagos" });
+    res.status(500).json({ message: error.message });
   }
 });
 
-// Actualizar estado de pago
-router.put("/:id/estado", async (req, res) => {
-  try {
-    const estadosValidos = ["pendiente", "completado", "fallido"];
-    if (!estadosValidos.includes(req.body.estado)) {
-      return res.status(400).json({ error: "Estado de pago inválido" });
-    }
+//Crear un nuevo pago
+router.post('/', async (req, res) => {
+  const pago = new Pago({
+    cliente_id: req.body.cliente_id,
+    monto: req.body.monto,
+    metodo: req.body.metodo,
+    fecha_pago: req.body.fecha_pago || Date.now(),
+    estado: req.body.estado || 'pendiente'
+  });
 
-    const pagoActualizado = await Pago.findByIdAndUpdate(
-      req.params.id,
-      { estado: req.body.estado },
-      { new: true }
-    );
-    
-    if (!pagoActualizado) {
-      return res.status(404).json({ error: "Pago no encontrado" });
-    }
-    
-    res.json(pagoActualizado);
+  try {
+    const nuevoPago = await pago.save();
+    res.status(201).json(nuevoPago);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
-// Actualizar pago
-router.put("/:id", async (req, res) => {
+//Actualizar un pago
+router.put('/:id', async (req, res) => {
   try {
-    const metodosValidos = ["tarjeta", "transferencia", "efectivo"];
-    if (req.body.metodo && !metodosValidos.includes(req.body.metodo)) {
-      return res.status(400).json({ error: "Método de pago inválido" });
-    }
-
-    const estadosValidos = ["pendiente", "completado", "fallido"];
-    if (req.body.estado && !estadosValidos.includes(req.body.estado)) {
-      return res.status(400).json({ error: "Estado de pago inválido" });
-    }
-
-    const pagoActualizado = await Pago.findByIdAndUpdate(
+    const pago = await Pago.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      { new: true, runValidators: true }
     );
-    
-    if (!pagoActualizado) {
-      return res.status(404).json({ error: "Pago no encontrado" });
-    }
-    
-    res.json(pagoActualizado);
+    if (!pago) return res.status(404).json({ message: 'Pago no encontrado' });
+    res.json(pago);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
-
-
-// Eliminar pago
-router.delete("/:id", async (req, res) => {
+//Eliminar un pago
+router.delete('/:id', async (req, res) => {
   try {
-    const pagoEliminado = await Pago.findByIdAndDelete(req.params.id);
-    
-    if (!pagoEliminado) {
-      return res.status(404).json({ error: "Pago no encontrado" });
-    }
-    
-    res.json({ message: "Pago eliminado correctamente" });
+    const pago = await Pago.findByIdAndDelete(req.params.id);
+    if (!pago) return res.status(404).json({ message: 'Pago no encontrado' });
+    res.json({ message: 'Pago eliminado correctamente' });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 

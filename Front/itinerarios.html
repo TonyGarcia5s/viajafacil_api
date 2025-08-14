@@ -12,9 +12,7 @@
 <body>
     <header>
         <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <a href="index.html" class="nav-link">ViajaFácil</a>
-            </li>
+            <li class="nav-item"><a href="index.html" class="nav-link">ViajaFácil</a></li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#">Módulos</a>
                 <div class="dropdown-menu">
@@ -62,9 +60,7 @@
                     <input type="hidden" id="itinerarioId">
                     <div class="mb-3">
                         <label for="paquete_id" class="form-label">Paquete</label>
-                        <select id="paquete_id" class="form-select" required>
-                            <option value="">Seleccione un paquete</option>
-                        </select>
+                        <select id="paquete_id" class="form-select" required></select>
                     </div>
                     <div class="mb-3">
                         <label for="dia" class="form-label">Día</label>
@@ -78,7 +74,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="btnGuardar">Guardar</button>
-                    <button type="button" class="btn btn-success" id="btnActualizar" style="display:none;">Actualizar</button>
+                    <button type="button" class="btn btn-success" id="btnActualizar"
+                        style="display:none;">Actualizar</button>
                 </div>
             </form>
         </div>
@@ -89,49 +86,43 @@
         const API_PAQUETES = 'http://localhost:3000/api/paquetes/';
 
         function cargarPaquetes() {
-            $.get(API_PAQUETES, function (data) {
+            $.get(API_PAQUETES, function (paquetes) {
                 $('#paquete_id').empty().append('<option value="">Seleccione un paquete</option>');
-                data.forEach(pk => {
-                    $('#paquete_id').append(`
-                        <option value="${pk._id}">${pk.nombre} (${pk._id})</option>
-                    `);
-                });
+                paquetes.forEach(pk => $('#paquete_id').append(`<option value="${pk._id}">${pk.nombre}</option>`));
             });
         }
 
-        function cargarDatos() {
-            $.get('http://localhost:3000/api/paquetes/', function (paquetes) {
-                const paquetesMap = {};
-                paquetes.forEach(pk => {
-                    paquetesMap[pk._id] = pk.nombre;
-                });
+        function cargarItinerarios() {
+            $.get(API_PAQUETES, function (paquetes) {
+                const mapPaquetes = {};
+                paquetes.forEach(pk => mapPaquetes[pk._id] = pk.nombre);
 
                 $.get(API_URL, function (data) {
                     $('#listadatos').empty();
                     data.forEach(it => {
-                        const nombrePaquete = paquetesMap[it.paquete_id] || it.paquete_id;
+                        const nombrePaquete = mapPaquetes[it.paquete_id] || 'Desconocido';
                         $('#listadatos').append(`
-                            <tr>
-                                <td>${nombrePaquete}</td>
-                                <td>${it.dia}</td>
-                                <td>${it.actividad}</td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm" onclick="editarItinerario('${it._id}')">Editar</button>
-                                    <button class="btn btn-danger btn-sm" onclick="eliminarItinerario('${it._id}')">Eliminar</button>
-                                </td>
-                            </tr>
-                        `);
+                    <tr>
+                        <td>${nombrePaquete}</td>
+                        <td>${it.dia}</td>
+                        <td>${it.actividad}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="editarItinerario('${it._id}')">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarItinerario('${it._id}')">Eliminar</button>
+                        </td>
+                    </tr>
+                `);
                     });
                 });
             });
         }
-
 
         $('#btnNuevo').click(function () {
             $('#formItinerario')[0].reset();
             $('#itinerarioId').val('');
             $('#btnGuardar').show();
             $('#btnActualizar').hide();
+            cargarPaquetes();
             $('#modalItinerario').modal('show');
         });
 
@@ -149,27 +140,16 @@
                 data: JSON.stringify(nuevo),
                 success: function () {
                     $('#modalItinerario').modal('hide');
-                    cargarDatos();
+                    cargarItinerarios();
                 }
             });
-        });
-
-        $('#btnNuevo').click(function () {
-            $('#formItinerario')[0].reset();
-            $('#itinerarioId').val('');
-            $('#btnGuardar').show();
-            $('#btnActualizar').hide();
-            cargarPaquetes();
-            $('#modalItinerario').modal('show');
         });
 
         function editarItinerario(id) {
             $.get(API_URL + id, function (it) {
                 $('#itinerarioId').val(it._id);
                 cargarPaquetes();
-                setTimeout(() => {
-                    $('#paquete_id').val(it.paquete_id);
-                }, 300); // pequeño retraso para asegurar que las opciones ya estén cargadas
+                setTimeout(() => $('#paquete_id').val(it.paquete_id), 300);
                 $('#dia').val(it.dia);
                 $('#actividad').val(it.actividad);
                 $('#btnGuardar').hide();
@@ -177,7 +157,6 @@
                 $('#modalItinerario').modal('show');
             });
         }
-
 
         $('#btnActualizar').click(function () {
             const id = $('#itinerarioId').val();
@@ -193,7 +172,7 @@
                 data: JSON.stringify(actualizado),
                 success: function () {
                     $('#modalItinerario').modal('hide');
-                    cargarDatos();
+                    cargarItinerarios();
                 }
             });
         });
@@ -203,17 +182,13 @@
                 $.ajax({
                     url: API_URL + id,
                     type: 'DELETE',
-                    success: function () {
-                        cargarDatos();
-                    }
+                    success: function () { cargarItinerarios(); }
                 });
             }
         }
 
-        $(document).ready(cargarDatos);
+        $(document).ready(cargarItinerarios);
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

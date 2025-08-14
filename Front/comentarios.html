@@ -5,22 +5,32 @@
     <title>Comentarios - ViajaFácil</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        .star {
+            font-size: 1.5rem;
+            color: gray;
+            cursor: pointer;
+        }
+
+        .star.selected {
+            color: gold;
+        }
+
+        .star-display {
+            color: gold;
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 
 <body>
     <header>
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" id="navId" role="tablist">
-            <li class="nav-item">
-                <a href="index.html" class="nav-link" data-bs-toggle="tab" aria-current="page">ViajaFácil</a>
-            </li>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a href="index.html" class="nav-link">ViajaFácil</a></li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button"
-                    aria-haspopup="true" aria-expanded="false">Módulos</a>
+                <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#">Módulos</a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="cliente.html">Clientes</a>
                     <a class="dropdown-item" href="paquetes.html">Paquetes</a>
@@ -29,9 +39,6 @@
                     <a class="dropdown-item active" href="comentarios.html">Comentarios</a>
                     <a class="dropdown-item" href="itinerarios.html">Itinerarios</a>
                 </div>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a href="#tab5Id" class="nav-link" data-bs-toggle="tab">Configuración</a>
             </li>
         </ul>
     </header>
@@ -59,243 +66,143 @@
         </div>
     </div>
 
-    <!-- Modal para agregar/editar comentario -->
-    <div class="modal fade" id="modalComentario" tabindex="-1" aria-labelledby="modalComentarioLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <!-- Modal -->
+    <div class="modal fade" id="modalComentario">
+        <div class="modal-dialog">
             <form id="formComentario" class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalComentarioLabel">Agregar Comentario</h5>
+                    <h5 class="modal-title">Agregar Comentario</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="comentarioId">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="cliente_id" class="form-label">Cliente</label>
-                                <select class="form-select" id="cliente_id" required>
-                                    <option value="">Seleccione un cliente</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="paquete_id" class="form-label">Paquete</label>
-                                <select class="form-select" id="paquete_id" required>
-                                    <option value="">Seleccione un paquete</option>
-                                </select>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cliente</label>
+                        <select id="cliente_id" class="form-control" required></select>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label for="comentario" class="form-label">Comentario</label>
-                                <textarea id="comentario" class="form-control" rows="3" required></textarea>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Paquete</label>
+                        <select id="paquete_id" class="form-control" required></select>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="calificacion" class="form-label">Calificación</label>
-                                <div class="rating">
-                                    <input type="radio" id="star5" name="calificacion" value="5" required />
-                                    <label for="star5" title="5 estrellas">★</label>
-                                    <input type="radio" id="star4" name="calificacion" value="4" />
-                                    <label for="star4" title="4 estrellas">★</label>
-                                    <input type="radio" id="star3" name="calificacion" value="3" />
-                                    <label for="star3" title="3 estrellas">★</label>
-                                    <input type="radio" id="star2" name="calificacion" value="2" />
-                                    <label for="star2" title="2 estrellas">★</label>
-                                    <input type="radio" id="star1" name="calificacion" value="1" />
-                                    <label for="star1" title="1 estrella">★</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="fecha" class="form-label">Fecha</label>
-                                <input type="date" id="fecha" class="form-control" required>
-                            </div>
+                    <div class="mb-3">
+                        <label class="form-label">Comentario</label>
+                        <textarea id="comentario" class="form-control" required minlength="10"
+                            maxlength="500"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Calificación</label>
+                        <div id="calificacion" class="d-flex">
+                            <span class="star" data-value="1">&#9733;</span>
+                            <span class="star" data-value="2">&#9733;</span>
+                            <span class="star" data-value="3">&#9733;</span>
+                            <span class="star" data-value="4">&#9733;</span>
+                            <span class="star" data-value="5">&#9733;</span>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btnGuardar">Guardar</button>
-                    <button type="button" class="btn btn-success" id="btnActualizar"
-                        style="display: none;">Actualizar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <style>
-        .rating {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
-        }
-        .rating > input { display: none; }
-        .rating > label {
-            position: relative;
-            width: 1.1em;
-            font-size: 2rem;
-            color: #4e4e4e;
-            cursor: pointer;
-        }
-        .rating > label:hover,
-        .rating > label:hover ~ label,
-        .rating > input:checked ~ label {
-            color: #ffc107;
-        }
-    </style>
-
     <script>
         const API_URL = 'http://localhost:3000/api/comentarios/';
         const API_CLIENTES = 'http://localhost:3000/api/clientes/';
         const API_PAQUETES = 'http://localhost:3000/api/paquetes/';
+        let calificacionSeleccionada = 0;
 
-        // Cargar datos
-        function cargarDatos() {
+        function cargarClientes() {
+            return $.get(API_CLIENTES, function (clientes) {
+                $('#cliente_id').empty();
+                clientes.forEach(c => {
+                    $('#cliente_id').append(`<option value="${c._id}">${c.nombre}</option>`);
+                });
+            });
+        }
+
+        function cargarPaquetes() {
+            return $.get(API_PAQUETES, function (paquetes) {
+                $('#paquete_id').empty();
+                paquetes.forEach(p => {
+                    $('#paquete_id').append(`<option value="${p._id}">${p.nombre}</option>`);
+                });
+            });
+        }
+
+        function cargarComentarios() {
             $.get(API_URL, function (data) {
                 $('#listadatos').empty();
-                data.forEach(comentario => {
-                    const fecha = comentario.fecha ? new Date(comentario.fecha).toLocaleDateString('es-ES') : 'N/A';
-                    
+                data.forEach(c => {
+                    const nombreCliente = c.cliente_id?.nombre || 'Desconocido';
+                    const nombrePaquete = c.paquete_id?.nombre || 'Desconocido';
+                    const fecha = new Date(c.fecha).toLocaleDateString();
+                    const estrellas = '★'.repeat(c.calificacion);
                     $('#listadatos').append(`
-                        <tr>
-                            <td>${comentario.cliente_id?.nombre || comentario.cliente_id || 'N/A'}</td>
-                            <td>${comentario.paquete_id?.nombre || comentario.paquete_id || 'N/A'}</td>
-                            <td>${comentario.comentario || 'N/A'}</td>
-                            <td>
-                                <span class="text-warning">
-                                    ${'★'.repeat(comentario.calificacion || 0)}${'☆'.repeat(5 - (comentario.calificacion || 0))}
-                                </span>
-                                (${comentario.calificacion || 0}/5)
-                            </td>
-                            <td>${fecha}</td>
-                            <td>
-                                <button class="btn btn-danger btn-sm" onclick="eliminarComentario('${comentario._id}')">
-                                    <i class="fas fa-trash"></i> Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    `);
+                <tr>
+                    <td>${nombreCliente}</td>
+                    <td>${nombrePaquete}</td>
+                    <td>${c.comentario}</td>
+                    <td><span class="star-display">${estrellas}</span> ${c.calificacion}/5</td>
+                    <td>${fecha}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarComentario('${c._id}')">Eliminar</button>
+                    </td>
+                </tr>
+            `);
                 });
             });
         }
 
-        // Cargar clientes para select
-        function cargarClientes() {
-            $.get(API_CLIENTES, function(data) {
-                $('#cliente_id').empty();
-                $('#cliente_id').append('<option value="">Seleccione un cliente</option>');
-                data.forEach(cliente => {
-                    $('#cliente_id').append(`<option value="${cliente._id}">${cliente.nombre} (${cliente._id})</option>`);
-                });
-            });
-        }
-
-        // Cargar paquetes para select
-        function cargarPaquetes() {
-            $.get(API_PAQUETES, function(data) {
-                $('#paquete_id').empty();
-                $('#paquete_id').append('<option value="">Seleccione un paquete</option>');
-                data.forEach(paquete => {
-                    $('#paquete_id').append(`<option value="${paquete._id}">${paquete.nombre} (${paquete._id})</option>`);
-                });
-            });
-        }
-
-        // Nuevo comentario
-        $('#btnNuevo').click(function () {
-            $('#modalComentarioLabel').text('Agregar Comentario');
+        $('#btnNuevo').click(async function () {
             $('#formComentario')[0].reset();
-            $('#comentarioId').val('');
-            $('#btnGuardar').show();
-            $('#btnActualizar').hide();
-            cargarClientes();
-            cargarPaquetes();
-            $('#fecha').val(new Date().toISOString().split('T')[0]);
+            calificacionSeleccionada = 0;
+            $('.star').removeClass('selected');
+            await Promise.all([cargarClientes(), cargarPaquetes()]);
             $('#modalComentario').modal('show');
         });
 
-        // Guardar comentario
         $('#formComentario').submit(function (e) {
             e.preventDefault();
-
-            const comentario = {
+            const nuevo = {
                 cliente_id: $('#cliente_id').val(),
                 paquete_id: $('#paquete_id').val(),
                 comentario: $('#comentario').val(),
-                calificacion: parseInt($('input[name="calificacion"]:checked').val()) || 0,
-                fecha: $('#fecha').val() || new Date().toISOString()
+                calificacion: calificacionSeleccionada
             };
-
             $.ajax({
                 url: API_URL,
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify(comentario),
+                data: JSON.stringify(nuevo),
                 success: function () {
-                    alert('Comentario guardado exitosamente');
                     $('#modalComentario').modal('hide');
-                    cargarDatos();
-                },
-                error: function (xhr) {
-                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al guardar comentario'));
+                    cargarComentarios();
                 }
             });
         });
 
-        // Editar comentario
-        function editarComentario(id) {
-            $.get(API_URL + id, function (comentario) {
-                $('#modalComentarioLabel').text('Editar Comentario');
-                $('#comentarioId').val(comentario._id);
-                $('#cliente_id').val(comentario.cliente_id);
-                $('#paquete_id').val(comentario.paquete_id);
-                $('#comentario').val(comentario.comentario);
-                $(`input[name="calificacion"][value="${comentario.calificacion}"]`).prop('checked', true);
-                $('#fecha').val(comentario.fecha ? comentario.fecha.split('T')[0] : '');
-
-                // Cargar selects
-                cargarClientes();
-                cargarPaquetes();
-
-                $('#btnGuardar').hide();
-                $('#btnActualizar').show();
-                $('#modalComentario').modal('show');
-            });
-        }
-
-
-        // Eliminar comentario
         function eliminarComentario(id) {
-            if (confirm('¿Está seguro de que desea eliminar este comentario?')) {
+            if (confirm('¿Eliminar este comentario?')) {
                 $.ajax({
                     url: API_URL + id,
                     type: 'DELETE',
                     success: function () {
-                        alert('Comentario eliminado exitosamente');
-                        cargarDatos();
-                    },
-                    error: function (xhr) {
-                        alert('Error: ' + (xhr.responseJSON?.error || 'Error al eliminar comentario'));
+                        cargarComentarios();
                     }
                 });
             }
         }
 
-        // Cargar datos al iniciar
-        $(document).ready(function () {
-            cargarDatos();
+        $('.star').on('click', function () {
+            calificacionSeleccionada = $(this).data('value');
+            $('.star').removeClass('selected');
+            $(this).prevAll().addBack().addClass('selected');
         });
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+        $(document).ready(cargarComentarios);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

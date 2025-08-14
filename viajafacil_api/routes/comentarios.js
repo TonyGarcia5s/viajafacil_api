@@ -2,87 +2,43 @@ const express = require("express");
 const router = express.Router();
 const Comentario = require("../models/comentarios");
 
-// Crear nuevo comentario
-router.post("/", async (req, res) => {
-  try {
-    // Validar calificación
-    if (req.body.calificacion < 1 || req.body.calificacion > 5) {
-      return res.status(400).json({ error: "La calificación debe estar entre 1 y 5" });
-    }
-
-    const nuevoComentario = new Comentario({
-      cliente_id: req.body.cliente_id,
-      paquete_id: req.body.paquete_id,
-      comentario: req.body.comentario,
-      calificacion: req.body.calificacion
-    });
-    
-    const comentarioGuardado = await nuevoComentario.save();
-    res.status(201).json(comentarioGuardado);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// Obtener todos los comentarios
+//Obtener todos los comentarios 
 router.get("/", async (req, res) => {
   try {
-    const comentarios = await Comentario.find();
+    const comentarios = await Comentario.find()
+      .populate("cliente_id", "nombre")
+      .populate("paquete_id", "nombre");
     res.json(comentarios);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener comentarios" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
-// Obtener comentarios por paquete
-router.get("/paquete/:paqueteId", async (req, res) => {
+//Crear comentario
+router.post("/", async (req, res) => {
+  const comentario = new Comentario({
+    cliente_id: req.body.cliente_id,
+    paquete_id: req.body.paquete_id,
+    comentario: req.body.comentario,
+    calificacion: req.body.calificacion
+  });
+
   try {
-    const comentarios = await Comentario.find({ paquete_id: req.params.paqueteId });
-    res.json(comentarios);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener comentarios" });
+    const nuevoComentario = await comentario.save();
+    res.status(201).json(nuevoComentario);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 });
 
-// Actualizar comentario
-router.put("/:id", async (req, res) => {
-  try {
-    // Validar calificación
-    if (req.body.calificacion && (req.body.calificacion < 1 || req.body.calificacion > 5)) {
-      return res.status(400).json({ error: "La calificación debe estar entre 1 y 5" });
-    }
-
-    const comentarioActualizado = await Comentario.findByIdAndUpdate(
-      req.params.id,
-      {
-        comentario: req.body.comentario,
-        calificacion: req.body.calificacion
-      },
-      { new: true }
-    );
-    
-    if (!comentarioActualizado) {
-      return res.status(404).json({ error: "Comentario no encontrado" });
-    }
-    
-    res.json(comentarioActualizado);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// Eliminar comentario
+//Eliminar comentario
 router.delete("/:id", async (req, res) => {
   try {
-    const comentarioEliminado = await Comentario.findByIdAndDelete(req.params.id);
-    
-    if (!comentarioEliminado) {
-      return res.status(404).json({ error: "Comentario no encontrado" });
-    }
-    
-    res.json({ message: "Comentario eliminado correctamente" });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+    const eliminado = await Comentario.findByIdAndDelete(req.params.id);
+    if (!eliminado) return res.status(404).json({ message: "Comentario no encontrado" });
+    res.json({ message: "Comentario eliminado" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
