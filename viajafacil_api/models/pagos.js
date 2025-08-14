@@ -1,7 +1,34 @@
-module.exports = {
-  cliente_id: "cliente1_id",
-  monto: 980,
-  metodo: "tarjeta",
-  fecha_pago: new Date("2025-07-12T10:30:00Z"),
-  estado: "completado"
-};
+const mongoose = require("mongoose");
+
+const PagoSchema = new mongoose.Schema({
+  cliente_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Cliente",
+    required: true
+  },
+  cotizacion_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Cotizacion",
+    required: true
+  },
+  monto: {
+    type: Number,
+    required: true
+  },
+  metodo: {
+    type: String,
+    enum: ["tarjeta", "transferencia", "efectivo"],
+    required: true
+  },
+  fecha_pago: {
+    type: Date,
+    default: Date.now
+  },
+  estado: {
+    type: String,
+    enum: ["pendiente", "completado", "fallido"],
+    default: "pendiente"
+  }
+});
+
+module.exports = mongoose.model("Pago", PagoSchema);

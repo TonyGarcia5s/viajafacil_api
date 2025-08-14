@@ -8,6 +8,9 @@ const paquetesRoutes = require("./routes/paquetes");
 const agentesRoutes = require("./routes/agentes");
 const preferenciasRoutes = require("./routes/preferencias");
 const recomendacionesRoutes = require("./routes/recomendaciones");
+const pagosRoutes = require("./routes/pagos");
+const comentariosRoutes = require("./routes/comentarios");
+const itinerariosRoutes = require("./routes/itinerarios");
 
 const app = express();
 app.use(cors());
@@ -27,7 +30,9 @@ app.use("/api/paquetes", paquetesRoutes);
 app.use("/api/agentes", agentesRoutes);
 app.use("/api/preferencias", preferenciasRoutes);
 app.use("/api/recomendaciones", recomendacionesRoutes);
-
+app.use("/api/pagos", pagosRoutes);
+app.use("/api/comentarios", comentariosRoutes);
+app.use("/api/itinerarios", itinerariosRoutes);
 
 app.get("/", (req, res) => {
   res.send("API de ViajaFácil funcionando correctamente");

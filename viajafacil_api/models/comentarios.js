@@ -1,7 +1,32 @@
-module.exports = {
-  cliente_id: "cliente1_id",
-  paquete_id: "paquete1_id",
-  comentario: "Una experiencia inolvidable.",
-  calificacion: 5,
-  fecha: new Date("2025-07-15T09:00:00Z")
-};
+const mongoose = require("mongoose");
+
+const ComentarioSchema = new mongoose.Schema({
+  cliente_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Cliente",
+    required: true
+  },
+  paquete_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Paquete",
+    required: true
+  },
+  comentario: {
+    type: String,
+    required: true,
+    minlength: 10,
+    maxlength: 500
+  },
+  calificacion: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5
+  },
+  fecha: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+module.exports = mongoose.model("Comentario", ComentarioSchema);

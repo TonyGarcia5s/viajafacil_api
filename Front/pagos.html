@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <title>Pagos - ViajaFácil</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="navId" role="tablist">
+            <li class="nav-item">
+                <a href="index.html" class="nav-link" data-bs-toggle="tab" aria-current="page">ViajaFácil</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button"
+                    aria-haspopup="true" aria-expanded="false">Módulos</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="cliente.html">Clientes</a>
+                    <a class="dropdown-item" href="paquetes.html">Paquetes</a>
+                    <a class="dropdown-item" href="cotizacion.html">Cotizaciones</a>
+                    <a class="dropdown-item active" href="pagos.html">Pagos</a>
+                    <a class="dropdown-item" href="comentarios.html">Comentarios</a>
+                    <a class="dropdown-item" href="itinerarios.html">Itinerarios</a>
+                </div>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#tab5Id" class="nav-link" data-bs-toggle="tab">Configuración</a>
+            </li>
+        </ul>
+    </header>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>Gestión de Pagos</h1>
+            <button class="btn btn-success" id="btnNuevo">Agregar Pago</button>
+        </div>
+
+        <div class="table-responsive mt-4">
+            <table class="table table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Cliente ID</th>
+                        <th>Cotización ID</th>
+                        <th>Monto</th>
+                        <th>Método</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="listadatos"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para agregar/editar pago -->
+    <div class="modal fade" id="modalPago" tabindex="-1" aria-labelledby="modalPagoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="formPago" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalPagoLabel">Agregar Pago</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="pagoId">
+                    <div class="mb-3">
+                        <label for="cliente_id" class="form-label">ID Cliente</label>
+                        <input type="text" id="cliente_id" class="form-control" required>
+                        <small class="form-text text-muted">Ingrese el ID del cliente</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cotizacion_id" class="form-label">ID Cotización</label>
+                        <input type="text" id="cotizacion_id" class="form-control" required>
+                        <small class="form-text text-muted">Ingrese el ID de la cotización</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="monto" class="form-label">Monto</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" id="monto" class="form-control" min="0" step="0.01" required>
+                        </div>
+                        <small class="form-text text-muted">Ingrese el monto del pago</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="metodo" class="form-label">Método</label>
+                        <select class="form-select" id="metodo" required>
+                            <option value="">Seleccione método</option>
+                            <option value="tarjeta">Tarjeta</option>
+                            <option value="transferencia">Transferencia</option>
+                            <option value="efectivo">Efectivo</option>
+                        </select>
+                        <small class="form-text text-muted">Seleccione el método de pago</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select class="form-select" id="estado" required>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="completado">Completado</option>
+                            <option value="fallido">Fallido</option>
+                        </select>
+                        <small class="form-text text-muted">Seleccione el estado del pago</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardar">Guardar</button>
+                    <button type="button" class="btn btn-success" id="btnActualizar"
+                        style="display: none;">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function getEstadoBadge(estado) {
+            switch (estado) {
+                case 'completado': return 'bg-success';
+                case 'pendiente': return 'bg-warning';
+                case 'fallido': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+
+        const API_URL = 'http://localhost:3000/api/pagos/';
+
+        // Cargar datos
+        function cargarDatos() {
+            $.get(API_URL, function (data) {
+                $('#listadatos').empty();
+                data.forEach(pago => {
+                    const fecha = pago.fecha_pago ? new Date(pago.fecha_pago).toLocaleDateString('es-ES') : 'N/A';
+                    const estadoBadge = getEstadoBadge(pago.estado);
+                    
+                    $('#listadatos').append(`
+                        <tr>
+                            <td>${pago.cliente_id.substring(0, 8)}...</td>
+                            <td>${pago.cotizacion_id.substring(0, 8)}...</td>
+                            <td>$${pago.monto || 'N/A'}</td>
+                            <td>${pago.metodo || 'N/A'}</td>
+                            <td>${fecha}</td>
+                            <td><span class="badge ${estadoBadge}">${pago.estado || 'N/A'}</span></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm me-1" onclick="editarPago('${pago._id}')">
+                                    Editar
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="eliminarPago('${pago._id}')">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+        }
+
+        // Nuevo pago
+        $('#btnNuevo').click(function () {
+            $('#modalPagoLabel').text('Agregar Pago');
+            $('#formPago')[0].reset();
+            $('#pagoId').val('');
+            $('#btnGuardar').show();
+            $('#btnActualizar').hide();
+            $('#estado').val('pendiente');
+            $('#modalPago').modal('show');
+        });
+
+        // Guardar pago
+        $('#formPago').submit(function (e) {
+            e.preventDefault();
+
+            const pago = {
+                cliente_id: $('#cliente_id').val(),
+                cotizacion_id: $('#cotizacion_id').val(),
+                monto: parseFloat($('#monto').val()),
+                metodo: $('#metodo').val(),
+                estado: $('#estado').val()
+            };
+
+            $.ajax({
+                url: API_URL,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(pago),
+                success: function () {
+                    alert('Pago guardado exitosamente');
+                    $('#modalPago').modal('hide');
+                    cargarDatos();
+                },
+                error: function (xhr) {
+                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al guardar'));
+                }
+            });
+        });
+
+        // Editar pago
+        function editarPago(id) {
+            $.get(API_URL + id, function (pago) {
+                $('#modalPagoLabel').text('Editar Pago');
+                $('#pagoId').val(pago._id);
+                $('#cliente_id').val(pago.cliente_id);
+                $('#cotizacion_id').val(pago.cotizacion_id);
+                $('#monto').val(pago.monto);
+                $('#metodo').val(pago.metodo);
+                $('#estado').val(pago.estado);
+
+                $('#btnGuardar').hide();
+                $('#btnActualizar').show();
+                $('#modalPago').modal('show');
+            });
+        }
+
+        // Actualizar pago
+        $('#btnActualizar').click(function () {
+            const id = $('#pagoId').val();
+            const pago = {
+                cliente_id: $('#cliente_id').val(),
+                cotizacion_id: $('#cotizacion_id').val(),
+                monto: parseFloat($('#monto').val()),
+                metodo: $('#metodo').val(),
+                estado: $('#estado').val()
+            };
+
+            $.ajax({
+                url: API_URL + id,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(pago),
+                success: function () {
+                    alert('Pago actualizado exitosamente');
+                    $('#modalPago').modal('hide');
+                    cargarDatos();
+                },
+                error: function (xhr) {
+                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al actualizar'));
+                }
+            });
+        });
+
+        // Eliminar pago
+        function eliminarPago(id) {
+            if (confirm('¿Está seguro de que desea eliminar este pago?')) {
+                $.ajax({
+                    url: API_URL + id,
+                    type: 'DELETE',
+                    success: function () {
+                        alert('Pago eliminado exitosamente');
+                        cargarDatos();
+                    },
+                    error: function (xhr) {
+                        alert('Error: ' + (xhr.responseJSON?.error || 'Error al eliminar'));
+                    }
+                });
+            }
+        }
+
+        // Cargar datos al iniciar
+        $(document).ready(function () {
+            cargarDatos();
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
