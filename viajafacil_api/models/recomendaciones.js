@@ -9,6 +9,8 @@ const recomendacionesSchema = new mongoose.Schema({
       razon: String
     }
   ]
+}, { 
+  collection: 'recomendaciones'
 });
 
 module.exports = mongoose.model('Recomendacion', recomendacionesSchema);

@@ -6,11 +6,6 @@ const PagoSchema = new mongoose.Schema({
     ref: "Cliente",
     required: true
   },
-  cotizacion_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Cotizacion",
-    required: true
-  },
   monto: {
     type: Number,
     required: true

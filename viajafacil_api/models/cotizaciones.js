@@ -38,6 +38,9 @@ const CotizacionSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+}, { 
+  collection: 'cotizaciones',
+  timestamps: false
 });
 
 module.exports = mongoose.model("Cotizacion", CotizacionSchema);
