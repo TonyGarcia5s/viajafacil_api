@@ -15,7 +15,7 @@ db.pagos.drop();
 db.comentarios.drop();
 db.recomendaciones.drop();
 
-//INSERTAR COLECCIONES Y REGISTROS
+//INSERTAR COLECCIONES Y REGISTROS DE EJEMPLO
 db.clientes.insertMany([
     {
         _id: ObjectId("64d8a1b7f8a9d8c7a1b1c1a1"),
@@ -187,14 +187,14 @@ db.itinerarios.insertMany([
 db.preferencias.insertMany([
     {
         _id: ObjectId("64d8a1b7f8a9d8c7a1b1c8a1"),
-        cliente_id: ObjectId("64d8a1b7f8a9d8c7a1b1c1a1"),  // Corregido
+        cliente_id: ObjectId("64d8a1b7f8a9d8c7a1b1c1a1"),
         preferencias_clima: "tropical",
         tipos_destinos: ["playa", "montaña"],
         actividades_favoritas: ["senderismo", "snorkel"]
     },
     {
         _id: ObjectId("64d8a1b7f8a9d8c7a1b1c8a2"),
-        cliente_id: ObjectId("64d8a1b7f8a9d8c7a1b1c1a2"),  // Corregido
+        cliente_id: ObjectId("64d8a1b7f8a9d8c7a1b1c1a2"),
         preferencias_clima: "templado",
         tipos_destinos: ["ciudad", "campo"],
         actividades_favoritas: ["gastronomía", "museos"]
@@ -266,7 +266,7 @@ db.recomendaciones.insertMany([
     {
         _id: ObjectId("64d8a1b7f8a9d8c7a1b1cc01"),
         cliente_id: ObjectId("64d8a1b7f8a9d8c7a1b1c1a1"),
-        temporada: "verano",  // Campo requerido
+        temporada: "verano",
         paquetes_sugeridos: [
             {
                 paquete_id: ObjectId("64d8a1b7f8a9d8c7a1b1c6a1"),

@@ -13,7 +13,6 @@ router.post("/", async (req, res) => {
 
     const nuevoPago = new Pago({
       cliente_id: req.body.cliente_id,
-      cotizacion_id: req.body.cotizacion_id,
       monto: req.body.monto,
       metodo: req.body.metodo,
       estado: req.body.estado || "pendiente"
@@ -49,7 +48,6 @@ router.get("/cliente/:clienteId", async (req, res) => {
 // Actualizar estado de pago
 router.put("/:id/estado", async (req, res) => {
   try {
-    // Validar estado
     const estadosValidos = ["pendiente", "completado", "fallido"];
     if (!estadosValidos.includes(req.body.estado)) {
       return res.status(400).json({ error: "Estado de pago inválido" });
@@ -70,6 +68,37 @@ router.put("/:id/estado", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+// Actualizar pago
+router.put("/:id", async (req, res) => {
+  try {
+    const metodosValidos = ["tarjeta", "transferencia", "efectivo"];
+    if (req.body.metodo && !metodosValidos.includes(req.body.metodo)) {
+      return res.status(400).json({ error: "Método de pago inválido" });
+    }
+
+    const estadosValidos = ["pendiente", "completado", "fallido"];
+    if (req.body.estado && !estadosValidos.includes(req.body.estado)) {
+      return res.status(400).json({ error: "Estado de pago inválido" });
+    }
+
+    const pagoActualizado = await Pago.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    
+    if (!pagoActualizado) {
+      return res.status(404).json({ error: "Pago no encontrado" });
+    }
+    
+    res.json(pagoActualizado);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+
 
 // Eliminar pago
 router.delete("/:id", async (req, res) => {

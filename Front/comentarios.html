@@ -8,6 +8,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 
 <body>
@@ -45,8 +46,8 @@
             <table class="table table-hover">
                 <thead class="table-primary">
                     <tr>
-                        <th>Cliente ID</th>
-                        <th>Paquete ID</th>
+                        <th>Cliente</th>
+                        <th>Paquete</th>
                         <th>Comentario</th>
                         <th>Calificación</th>
                         <th>Fecha</th>
@@ -60,7 +61,7 @@
 
     <!-- Modal para agregar/editar comentario -->
     <div class="modal fade" id="modalComentario" tabindex="-1" aria-labelledby="modalComentarioLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <form id="formComentario" class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalComentarioLabel">Agregar Comentario</h5>
@@ -68,25 +69,56 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="comentarioId">
-                    <div class="mb-3">
-                        <label for="cliente_id" class="form-label">ID Cliente</label>
-                        <input type="text" id="cliente_id" class="form-control" required>
-                        <small class="form-text text-muted">Ingrese el ID del cliente</small>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="cliente_id" class="form-label">Cliente</label>
+                                <select class="form-select" id="cliente_id" required>
+                                    <option value="">Seleccione un cliente</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="paquete_id" class="form-label">Paquete</label>
+                                <select class="form-select" id="paquete_id" required>
+                                    <option value="">Seleccione un paquete</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="paquete_id" class="form-label">ID Paquete</label>
-                        <input type="text" id="paquete_id" class="form-control" required>
-                        <small class="form-text text-muted">Ingrese el ID del paquete</small>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="comentario" class="form-label">Comentario</label>
+                                <textarea id="comentario" class="form-control" rows="3" required></textarea>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="comentario" class="form-label">Comentario</label>
-                        <textarea id="comentario" class="form-control" required></textarea>
-                        <small class="form-text text-muted">Ingrese el comentario</small>
-                    </div>
-                    <div class="mb-3">
-                        <label for="calificacion" class="form-label">Calificación</label>
-                        <input type="number" id="calificacion" class="form-control" min="1" max="5" required>
-                        <small class="form-text text-muted">Ingrese una calificación entre 1 y 5</small>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="calificacion" class="form-label">Calificación</label>
+                                <div class="rating">
+                                    <input type="radio" id="star5" name="calificacion" value="5" required />
+                                    <label for="star5" title="5 estrellas">★</label>
+                                    <input type="radio" id="star4" name="calificacion" value="4" />
+                                    <label for="star4" title="4 estrellas">★</label>
+                                    <input type="radio" id="star3" name="calificacion" value="3" />
+                                    <label for="star3" title="3 estrellas">★</label>
+                                    <input type="radio" id="star2" name="calificacion" value="2" />
+                                    <label for="star2" title="2 estrellas">★</label>
+                                    <input type="radio" id="star1" name="calificacion" value="1" />
+                                    <label for="star1" title="1 estrella">★</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fecha" class="form-label">Fecha</label>
+                                <input type="date" id="fecha" class="form-control" required>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -99,8 +131,31 @@
         </div>
     </div>
 
+    <style>
+        .rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        .rating > input { display: none; }
+        .rating > label {
+            position: relative;
+            width: 1.1em;
+            font-size: 2rem;
+            color: #4e4e4e;
+            cursor: pointer;
+        }
+        .rating > label:hover,
+        .rating > label:hover ~ label,
+        .rating > input:checked ~ label {
+            color: #ffc107;
+        }
+    </style>
+
     <script>
         const API_URL = 'http://localhost:3000/api/comentarios/';
+        const API_CLIENTES = 'http://localhost:3000/api/clientes/';
+        const API_PAQUETES = 'http://localhost:3000/api/paquetes/';
 
         // Cargar datos
         function cargarDatos() {
@@ -111,21 +166,45 @@
                     
                     $('#listadatos').append(`
                         <tr>
-                            <td>${comentario.cliente_id.substring(0, 8)}...</td>
-                            <td>${comentario.paquete_id.substring(0, 8)}...</td>
-                            <td>${comentario.comentario.substring(0, 30)}...</td>
-                            <td>${'★'.repeat(comentario.calificacion)}</td>
+                            <td>${comentario.cliente_id?.nombre || comentario.cliente_id || 'N/A'}</td>
+                            <td>${comentario.paquete_id?.nombre || comentario.paquete_id || 'N/A'}</td>
+                            <td>${comentario.comentario || 'N/A'}</td>
+                            <td>
+                                <span class="text-warning">
+                                    ${'★'.repeat(comentario.calificacion || 0)}${'☆'.repeat(5 - (comentario.calificacion || 0))}
+                                </span>
+                                (${comentario.calificacion || 0}/5)
+                            </td>
                             <td>${fecha}</td>
                             <td>
-                                <button class="btn btn-primary btn-sm me-1" onclick="editarComentario('${comentario._id}')">
-                                    Editar
-                                </button>
                                 <button class="btn btn-danger btn-sm" onclick="eliminarComentario('${comentario._id}')">
-                                    Eliminar
+                                    <i class="fas fa-trash"></i> Eliminar
                                 </button>
                             </td>
                         </tr>
                     `);
+                });
+            });
+        }
+
+        // Cargar clientes para select
+        function cargarClientes() {
+            $.get(API_CLIENTES, function(data) {
+                $('#cliente_id').empty();
+                $('#cliente_id').append('<option value="">Seleccione un cliente</option>');
+                data.forEach(cliente => {
+                    $('#cliente_id').append(`<option value="${cliente._id}">${cliente.nombre} (${cliente._id})</option>`);
+                });
+            });
+        }
+
+        // Cargar paquetes para select
+        function cargarPaquetes() {
+            $.get(API_PAQUETES, function(data) {
+                $('#paquete_id').empty();
+                $('#paquete_id').append('<option value="">Seleccione un paquete</option>');
+                data.forEach(paquete => {
+                    $('#paquete_id').append(`<option value="${paquete._id}">${paquete.nombre} (${paquete._id})</option>`);
                 });
             });
         }
@@ -137,6 +216,9 @@
             $('#comentarioId').val('');
             $('#btnGuardar').show();
             $('#btnActualizar').hide();
+            cargarClientes();
+            cargarPaquetes();
+            $('#fecha').val(new Date().toISOString().split('T')[0]);
             $('#modalComentario').modal('show');
         });
 
@@ -148,7 +230,8 @@
                 cliente_id: $('#cliente_id').val(),
                 paquete_id: $('#paquete_id').val(),
                 comentario: $('#comentario').val(),
-                calificacion: parseInt($('#calificacion').val())
+                calificacion: parseInt($('input[name="calificacion"]:checked').val()) || 0,
+                fecha: $('#fecha').val() || new Date().toISOString()
             };
 
             $.ajax({
@@ -162,7 +245,7 @@
                     cargarDatos();
                 },
                 error: function (xhr) {
-                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al guardar'));
+                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al guardar comentario'));
                 }
             });
         });
@@ -175,7 +258,12 @@
                 $('#cliente_id').val(comentario.cliente_id);
                 $('#paquete_id').val(comentario.paquete_id);
                 $('#comentario').val(comentario.comentario);
-                $('#calificacion').val(comentario.calificacion);
+                $(`input[name="calificacion"][value="${comentario.calificacion}"]`).prop('checked', true);
+                $('#fecha').val(comentario.fecha ? comentario.fecha.split('T')[0] : '');
+
+                // Cargar selects
+                cargarClientes();
+                cargarPaquetes();
 
                 $('#btnGuardar').hide();
                 $('#btnActualizar').show();
@@ -183,31 +271,6 @@
             });
         }
 
-        // Actualizar comentario
-        $('#btnActualizar').click(function () {
-            const id = $('#comentarioId').val();
-            const comentario = {
-                cliente_id: $('#cliente_id').val(),
-                paquete_id: $('#paquete_id').val(),
-                comentario: $('#comentario').val(),
-                calificacion: parseInt($('#calificacion').val())
-            };
-
-            $.ajax({
-                url: API_URL + id,
-                type: 'PUT',
-                contentType: 'application/json',
-                data: JSON.stringify(comentario),
-                success: function () {
-                    alert('Comentario actualizado exitosamente');
-                    $('#modalComentario').modal('hide');
-                    cargarDatos();
-                },
-                error: function (xhr) {
-                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al actualizar'));
-                }
-            });
-        });
 
         // Eliminar comentario
         function eliminarComentario(id) {
@@ -220,7 +283,7 @@
                         cargarDatos();
                     },
                     error: function (xhr) {
-                        alert('Error: ' + (xhr.responseJSON?.error || 'Error al eliminar'));
+                        alert('Error: ' + (xhr.responseJSON?.error || 'Error al eliminar comentario'));
                     }
                 });
             }

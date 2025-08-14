@@ -8,6 +8,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 
 <body>
@@ -15,7 +16,7 @@
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" id="navId" role="tablist">
             <li class="nav-item">
-                <a href="index.html" class="nav-link" data-bs-toggle="tab" aria-current="page">ViajaFácil</a>
+                <a href="#tab1Id" class="nav-link" data-bs-toggle="tab" aria-current="page">ViajaFácil</a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button"
@@ -25,12 +26,15 @@
                     <a class="dropdown-item" href="paquetes.html">Paquetes</a>
                     <a class="dropdown-item" href="cotizacion.html">Cotizaciones</a>
                     <a class="dropdown-item active" href="pagos.html">Pagos</a>
-                    <a class="dropdown-item" href="comentarios.html">Comentarios</a>
-                    <a class="dropdown-item" href="itinerarios.html">Itinerarios</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#tab4Id">Reportes</a>
                 </div>
             </li>
             <li class="nav-item" role="presentation">
                 <a href="#tab5Id" class="nav-link" data-bs-toggle="tab">Configuración</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a href="#" class="nav-link disabled" data-bs-toggle="tab">Ayuda</a>
             </li>
         </ul>
     </header>
@@ -38,18 +42,18 @@
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center">
             <h1>Gestión de Pagos</h1>
-            <button class="btn btn-success" id="btnNuevo">Agregar Pago</button>
+            <button class="btn btn-success" id="btnNuevo">Registrar Pago</button>
         </div>
 
         <div class="table-responsive mt-4">
             <table class="table table-hover">
                 <thead class="table-primary">
                     <tr>
-                        <th>Cliente ID</th>
+                        <th>Cliente</th>
                         <th>Monto</th>
                         <th>Método</th>
-                        <th>Fecha</th>
                         <th>Estado</th>
+                        <th>Fecha Pago</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -60,45 +64,64 @@
 
     <!-- Modal para agregar/editar pago -->
     <div class="modal fade" id="modalPago" tabindex="-1" aria-labelledby="modalPagoLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <form id="formPago" class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalPagoLabel">Agregar Pago</h5>
+                    <h5 class="modal-title" id="modalPagoLabel">Registrar Pago</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="pagoId">
-                    <div class="mb-3">
-                        <label for="cliente_id" class="form-label">ID Cliente</label>
-                        <input type="text" id="cliente_id" class="form-control" required>
-                        <small class="form-text text-muted">Ingrese el ID del cliente</small>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="cliente_id" class="form-label">Cliente</label>
+                                <select class="form-select" id="cliente_id" required>
+                                    <option value="">Seleccione un cliente</option>
+                                    <!-- Opciones se cargarán dinámicamente -->
+                                </select>
+                            </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="monto" class="form-label">Monto</label>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number" id="monto" class="form-control" min="0" step="0.01" required>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="monto" class="form-label">Monto</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" id="monto" class="form-control" 
+                                        placeholder="0.00" min="0" step="0.01" required />
+                                </div>
+                            </div>
                         </div>
-                        <small class="form-text text-muted">Ingrese el monto del pago</small>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="metodo" class="form-label">Método de Pago</label>
+                                <select class="form-select" id="metodo" required>
+                                    <option value="">Seleccione método</option>
+                                    <option value="tarjeta">Tarjeta</option>
+                                    <option value="transferencia">Transferencia</option>
+                                    <option value="efectivo">Efectivo</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="metodo" class="form-label">Método</label>
-                        <select class="form-select" id="metodo" required>
-                            <option value="">Seleccione método</option>
-                            <option value="tarjeta">Tarjeta</option>
-                            <option value="transferencia">Transferencia</option>
-                            <option value="efectivo">Efectivo</option>
-                        </select>
-                        <small class="form-text text-muted">Seleccione el método de pago</small>
-                    </div>
-                    <div class="mb-3">
-                        <label for="estado" class="form-label">Estado</label>
-                        <select class="form-select" id="estado" required>
-                            <option value="pendiente">Pendiente</option>
-                            <option value="completado">Completado</option>
-                            <option value="fallido">Fallido</option>
-                        </select>
-                        <small class="form-text text-muted">Seleccione el estado del pago</small>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select class="form-select" id="estado" required>
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="completado">Completado</option>
+                                    <option value="fallido">Fallido</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="fecha_pago" class="form-label">Fecha de Pago</label>
+                                <input type="date" id="fecha_pago" class="form-control" required>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -112,6 +135,16 @@
     </div>
 
     <script>
+        // Funciones para iconos y colores
+        function getMetodoIcon(metodo) {
+            switch (metodo) {
+                case 'tarjeta': return '<i class="fas fa-credit-card"></i>';
+                case 'transferencia': return '<i class="fas fa-exchange-alt"></i>';
+                case 'efectivo': return '<i class="fas fa-money-bill-wave"></i>';
+                default: return '';
+            }
+        }
+
         function getEstadoBadge(estado) {
             switch (estado) {
                 case 'completado': return 'bg-success';
@@ -122,6 +155,8 @@
         }
 
         const API_URL = 'http://localhost:3000/api/pagos/';
+        const API_CLIENTES = 'http://localhost:3000/api/clientes/';
+        const API_COTIZACIONES = 'http://localhost:3000/api/cotizaciones/';
 
         // Cargar datos
         function cargarDatos() {
@@ -129,21 +164,20 @@
                 $('#listadatos').empty();
                 data.forEach(pago => {
                     const fecha = pago.fecha_pago ? new Date(pago.fecha_pago).toLocaleDateString('es-ES') : 'N/A';
-                    const estadoBadge = getEstadoBadge(pago.estado);
                     
                     $('#listadatos').append(`
                         <tr>
-                            <td>${pago.cliente_id.substring(0, 8)}...</td>
-                            <td>$${pago.monto || 'N/A'}</td>
-                            <td>${pago.metodo || 'N/A'}</td>
+                            <td>${pago.cliente_id ? pago.cliente_id.nombre || pago.cliente_id : 'N/A'}</td>
+                            <td>$${pago.monto ? pago.monto.toFixed(2) : '0.00'}</td>
+                            <td>${getMetodoIcon(pago.metodo)} ${pago.metodo || 'N/A'}</td>
+                            <td><span class="badge ${getEstadoBadge(pago.estado)}">${pago.estado || 'N/A'}</span></td>
                             <td>${fecha}</td>
-                            <td><span class="badge ${estadoBadge}">${pago.estado || 'N/A'}</span></td>
                             <td>
                                 <button class="btn btn-primary btn-sm me-1" onclick="editarPago('${pago._id}')">
-                                    Editar
+                                    <i class="fas fa-edit"></i> Editar
                                 </button>
                                 <button class="btn btn-danger btn-sm" onclick="eliminarPago('${pago._id}')">
-                                    Eliminar
+                                    <i class="fas fa-trash"></i> Eliminar
                                 </button>
                             </td>
                         </tr>
@@ -152,14 +186,37 @@
             });
         }
 
+        // Cargar clientes para select
+        function cargarClientes() {
+            $.get(API_CLIENTES, function(data) {
+                $('#cliente_id').empty();
+                $('#cliente_id').append('<option value="">Seleccione un cliente</option>');
+                data.forEach(cliente => {
+                    $('#cliente_id').append(`<option value="${cliente._id}">${cliente.nombre}</option>`);
+                });
+            });
+        }
+
+        // Cargar cotizaciones para select
+        function cargarCotizaciones() {
+            $.get(API_COTIZACIONES, function(data) {
+                $('#cotizacion_id').empty();
+                $('#cotizacion_id').append('<option value="">Seleccione una cotización</option>');
+                data.forEach(cotizacion => {
+                    $('#cotizacion_id').append(`<option value="${cotizacion._id}">${cotizacion._id}</option>`);
+                });
+            });
+        }
+
         // Nuevo pago
         $('#btnNuevo').click(function () {
-            $('#modalPagoLabel').text('Agregar Pago');
+            $('#modalPagoLabel').text('Registrar Pago');
             $('#formPago')[0].reset();
             $('#pagoId').val('');
             $('#btnGuardar').show();
             $('#btnActualizar').hide();
-            $('#estado').val('pendiente');
+            cargarClientes();
+            cargarCotizaciones();
             $('#modalPago').modal('show');
         });
 
@@ -169,9 +226,10 @@
 
             const pago = {
                 cliente_id: $('#cliente_id').val(),
-                monto: parseFloat($('#monto').val()),
+                monto: parseFloat($('#monto').val()) || 0,
                 metodo: $('#metodo').val(),
-                estado: $('#estado').val()
+                estado: $('#estado').val(),
+                fecha_pago: $('#fecha_pago').val() || new Date().toISOString()
             };
 
             $.ajax({
@@ -180,12 +238,12 @@
                 contentType: 'application/json',
                 data: JSON.stringify(pago),
                 success: function () {
-                    alert('Pago guardado exitosamente');
+                    alert('Pago registrado exitosamente');
                     $('#modalPago').modal('hide');
                     cargarDatos();
                 },
                 error: function (xhr) {
-                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al guardar'));
+                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al registrar pago'));
                 }
             });
         });
@@ -199,6 +257,11 @@
                 $('#monto').val(pago.monto);
                 $('#metodo').val(pago.metodo);
                 $('#estado').val(pago.estado);
+                $('#fecha_pago').val(pago.fecha_pago ? pago.fecha_pago.split('T')[0] : '');
+
+                // Cargar selects
+                cargarClientes();
+                cargarCotizaciones();
 
                 $('#btnGuardar').hide();
                 $('#btnActualizar').show();
@@ -211,9 +274,10 @@
             const id = $('#pagoId').val();
             const pago = {
                 cliente_id: $('#cliente_id').val(),
-                monto: parseFloat($('#monto').val()),
+                monto: parseFloat($('#monto').val()) || 0,
                 metodo: $('#metodo').val(),
-                estado: $('#estado').val()
+                estado: $('#estado').val(),
+                fecha_pago: $('#fecha_pago').val() || new Date().toISOString()
             };
 
             $.ajax({
@@ -227,7 +291,7 @@
                     cargarDatos();
                 },
                 error: function (xhr) {
-                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al actualizar'));
+                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al actualizar pago'));
                 }
             });
         });
@@ -255,7 +319,9 @@
         });
     </script>
 
+    <!-- Bootstrap JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
 </body>
+
 </html>

@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 const agentes = require("../models/agentes");
@@ -33,7 +32,7 @@ router.put('/:id', async (req, res) => {
 // PATCH para cambiar estado de activo/inactivo de un agente
 router.patch("/:id/estado", async (req, res) => {
   try {
-    const { activo } = req.body; // Se espera un booleano true/false
+    const { activo } = req.body;
 
     const agente = await agentes.findByIdAndUpdate(
       req.params.id,
