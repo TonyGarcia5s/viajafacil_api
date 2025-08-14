@@ -1,15 +1,52 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const ClienteSchema = new mongoose.Schema({
-  nombre: String,
-  correo: String,
-  telefono: String,
-  preferencias: {
-    clima: String,
-    presupuesto_max: Number,
-    tipo_viaje: String
+  nombre: {
+    type: String,
+    required: true,
+    trim: true,
   },
-  fecha_registro: Date
+  correo: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true,
+  },
+  telefono: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  preferencias: {
+    clima: {
+      type: String,
+      enum: ["tropical", "templado", "frio", "cualquiera"],
+      default: "cualquiera",
+    },
+    presupuesto_max: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+    tipo_viaje: {
+      type: String,
+      enum: [
+        "aventura",
+        "relax",
+        "cultural",
+        "romantico",
+        "familiar",
+        "negocios",
+        "gastronomico",
+      ],
+      default: "aventura",
+    },
+  },
+  fecha_registro: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-module.exports = mongoose.model('Cliente', ClienteSchema);
+module.exports = mongoose.model("Cliente", ClienteSchema);
