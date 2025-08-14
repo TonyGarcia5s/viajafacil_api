@@ -5,21 +5,18 @@
     <title>Itinerarios - ViajaFácil</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 
 <body>
     <header>
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" id="navId" role="tablist">
+        <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a href="index.html" class="nav-link" data-bs-toggle="tab" aria-current="page">ViajaFácil</a>
+                <a href="index.html" class="nav-link">ViajaFácil</a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button"
-                    aria-haspopup="true" aria-expanded="false">Módulos</a>
+                <a class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#">Módulos</a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="cliente.html">Clientes</a>
                     <a class="dropdown-item" href="paquetes.html">Paquetes</a>
@@ -28,9 +25,6 @@
                     <a class="dropdown-item" href="comentarios.html">Comentarios</a>
                     <a class="dropdown-item active" href="itinerarios.html">Itinerarios</a>
                 </div>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a href="#tab5Id" class="nav-link" data-bs-toggle="tab">Configuración</a>
             </li>
         </ul>
     </header>
@@ -45,7 +39,7 @@
             <table class="table table-hover">
                 <thead class="table-primary">
                     <tr>
-                        <th>Paquete ID</th>
+                        <th>Paquete</th>
                         <th>Día</th>
                         <th>Actividad</th>
                         <th>Acciones</th>
@@ -56,37 +50,35 @@
         </div>
     </div>
 
-    <!-- Modal para agregar/editar itinerario -->
-    <div class="modal fade" id="modalItinerario" tabindex="-1" aria-labelledby="modalItinerarioLabel" aria-hidden="true">
+    <!-- Modal -->
+    <div class="modal fade" id="modalItinerario">
         <div class="modal-dialog">
             <form id="formItinerario" class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalItinerarioLabel">Agregar Itinerario</h5>
+                    <h5 class="modal-title">Agregar Itinerario</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="itinerarioId">
                     <div class="mb-3">
-                        <label for="paquete_id" class="form-label">ID Paquete</label>
-                        <input type="text" id="paquete_id" class="form-control" required>
-                        <small class="form-text text-muted">Ingrese el ID del paquete</small>
+                        <label for="paquete_id" class="form-label">Paquete</label>
+                        <select id="paquete_id" class="form-select" required>
+                            <option value="">Seleccione un paquete</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="dia" class="form-label">Día</label>
                         <input type="number" id="dia" class="form-control" min="1" required>
-                        <small class="form-text text-muted">Ingrese el día del itinerario</small>
                     </div>
                     <div class="mb-3">
                         <label for="actividad" class="form-label">Actividad</label>
                         <textarea id="actividad" class="form-control" required></textarea>
-                        <small class="form-text text-muted">Ingrese la actividad programada</small>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary" id="btnGuardar">Guardar</button>
-                    <button type="button" class="btn btn-success" id="btnActualizar"
-                        style="display: none;">Actualizar</button>
+                    <button type="button" class="btn btn-success" id="btnActualizar" style="display:none;">Actualizar</button>
                 </div>
             </form>
         </div>
@@ -94,34 +86,48 @@
 
     <script>
         const API_URL = 'http://localhost:3000/api/itinerarios/';
+        const API_PAQUETES = 'http://localhost:3000/api/paquetes/';
 
-        // Cargar datos
-        function cargarDatos() {
-            $.get(API_URL, function (data) {
-                $('#listadatos').empty();
-                data.forEach(itinerario => {
-                    $('#listadatos').append(`
-                        <tr>
-                            <td>${itinerario.paquete_id}</td>
-                            <td>${itinerario.dia}</td>
-                            <td>${itinerario.actividad}</td>
-                            <td>
-                                <button class="btn btn-primary btn-sm me-1" onclick="editarItinerario('${itinerario._id}')">
-                                    Editar
-                                </button>
-                                <button class="btn btn-danger btn-sm" onclick="eliminarItinerario('${itinerario._id}')">
-                                    Eliminar
-                                </button>
-                            </td>
-                        </tr>
+        function cargarPaquetes() {
+            $.get(API_PAQUETES, function (data) {
+                $('#paquete_id').empty().append('<option value="">Seleccione un paquete</option>');
+                data.forEach(pk => {
+                    $('#paquete_id').append(`
+                        <option value="${pk._id}">${pk.nombre} (${pk._id})</option>
                     `);
                 });
             });
         }
 
-        // Nuevo itinerario
+        function cargarDatos() {
+            $.get('http://localhost:3000/api/paquetes/', function (paquetes) {
+                const paquetesMap = {};
+                paquetes.forEach(pk => {
+                    paquetesMap[pk._id] = pk.nombre;
+                });
+
+                $.get(API_URL, function (data) {
+                    $('#listadatos').empty();
+                    data.forEach(it => {
+                        const nombrePaquete = paquetesMap[it.paquete_id] || it.paquete_id;
+                        $('#listadatos').append(`
+                            <tr>
+                                <td>${nombrePaquete}</td>
+                                <td>${it.dia}</td>
+                                <td>${it.actividad}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" onclick="editarItinerario('${it._id}')">Editar</button>
+                                    <button class="btn btn-danger btn-sm" onclick="eliminarItinerario('${it._id}')">Eliminar</button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                });
+            });
+        }
+
+
         $('#btnNuevo').click(function () {
-            $('#modalItinerarioLabel').text('Agregar Itinerario');
             $('#formItinerario')[0].reset();
             $('#itinerarioId').val('');
             $('#btnGuardar').show();
@@ -129,93 +135,82 @@
             $('#modalItinerario').modal('show');
         });
 
-        // Guardar itinerario
         $('#formItinerario').submit(function (e) {
             e.preventDefault();
-
-            const itinerario = {
+            const nuevo = {
                 paquete_id: $('#paquete_id').val(),
                 dia: parseInt($('#dia').val()),
                 actividad: $('#actividad').val()
             };
-
             $.ajax({
                 url: API_URL,
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify(itinerario),
+                data: JSON.stringify(nuevo),
                 success: function () {
-                    alert('Itinerario guardado exitosamente');
                     $('#modalItinerario').modal('hide');
                     cargarDatos();
-                },
-                error: function (xhr) {
-                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al guardar'));
                 }
             });
         });
 
-        // Editar itinerario
-        function editarItinerario(id) {
-            $.get(API_URL + id, function (itinerario) {
-                $('#modalItinerarioLabel').text('Editar Itinerario');
-                $('#itinerarioId').val(itinerario._id);
-                $('#paquete_id').val(itinerario.paquete_id);
-                $('#dia').val(itinerario.dia);
-                $('#actividad').val(itinerario.actividad);
+        $('#btnNuevo').click(function () {
+            $('#formItinerario')[0].reset();
+            $('#itinerarioId').val('');
+            $('#btnGuardar').show();
+            $('#btnActualizar').hide();
+            cargarPaquetes();
+            $('#modalItinerario').modal('show');
+        });
 
+        function editarItinerario(id) {
+            $.get(API_URL + id, function (it) {
+                $('#itinerarioId').val(it._id);
+                cargarPaquetes();
+                setTimeout(() => {
+                    $('#paquete_id').val(it.paquete_id);
+                }, 300); // pequeño retraso para asegurar que las opciones ya estén cargadas
+                $('#dia').val(it.dia);
+                $('#actividad').val(it.actividad);
                 $('#btnGuardar').hide();
                 $('#btnActualizar').show();
                 $('#modalItinerario').modal('show');
             });
         }
 
-        // Actualizar itinerario
+
         $('#btnActualizar').click(function () {
             const id = $('#itinerarioId').val();
-            const itinerario = {
+            const actualizado = {
                 paquete_id: $('#paquete_id').val(),
                 dia: parseInt($('#dia').val()),
                 actividad: $('#actividad').val()
             };
-
             $.ajax({
                 url: API_URL + id,
                 type: 'PUT',
                 contentType: 'application/json',
-                data: JSON.stringify(itinerario),
+                data: JSON.stringify(actualizado),
                 success: function () {
-                    alert('Itinerario actualizado exitosamente');
                     $('#modalItinerario').modal('hide');
                     cargarDatos();
-                },
-                error: function (xhr) {
-                    alert('Error: ' + (xhr.responseJSON?.error || 'Error al actualizar'));
                 }
             });
         });
 
-        // Eliminar itinerario
         function eliminarItinerario(id) {
-            if (confirm('¿Está seguro de que desea eliminar este itinerario?')) {
+            if (confirm('¿Eliminar este itinerario?')) {
                 $.ajax({
                     url: API_URL + id,
                     type: 'DELETE',
                     success: function () {
-                        alert('Itinerario eliminado exitosamente');
                         cargarDatos();
-                    },
-                    error: function (xhr) {
-                        alert('Error: ' + (xhr.responseJSON?.error || 'Error al eliminar'));
                     }
                 });
             }
         }
 
-        // Cargar datos al iniciar
-        $(document).ready(function () {
-            cargarDatos();
-        });
+        $(document).ready(cargarDatos);
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
